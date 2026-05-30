@@ -444,6 +444,12 @@ async function connectToWhatsApp() {
       if (msg.key.fromMe) return;
 
       const sender = msg.key.remoteJid;
+
+      // Respond ONLY to one-to-one direct messages.
+      // Skip groups (@g.us), broadcasts/status (@broadcast), and newsletters (@newsletter).
+      if (!sender || !sender.endsWith('@s.whatsapp.net')) {
+        return;
+      }
       const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').trim().toLowerCase();
 
       const timestamp = new Date().toLocaleString();
