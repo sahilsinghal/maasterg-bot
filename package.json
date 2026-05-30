@@ -1,0 +1,46 @@
+{
+  "name": "maasterg-bot",
+  "version": "1.0.0",
+  "description": "🙏 MAAsterG WhatsApp Bot - Spiritual Communication Platform. Free, Open-Source, NGO-Friendly",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "whatsapp",
+    "chatbot",
+    "baileys",
+    "ngo",
+    "spiritual",
+    "maasterg",
+    "node.js"
+  ],
+  "author": "MAAsterG Communication Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/maasterg-bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/maasterg-bot/issues"
+  },
+  "homepage": "https://github.com/yourusername/maasterg-bot#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.5.0",
+    "qrcode-terminal": "^0.12.0",
+    "pino": "^8.17.2",
+    "pino-pretty": "^10.3.1",
+    "express": "^4.18.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {},
+  "optionalDependencies": {
+    "ffmpeg-static": "^5.2.0"
+  }
+}
