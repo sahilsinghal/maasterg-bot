@@ -444,17 +444,19 @@ async function connectToWhatsApp() {
       if (msg.key.fromMe) return;
 
       const sender = msg.key.remoteJid;
-
-      // Respond ONLY to one-to-one direct messages.
-      // Skip groups (@g.us), broadcasts/status (@broadcast), and newsletters (@newsletter).
-      if (!sender || !sender.endsWith('@s.whatsapp.net')) {
-        return;
-      }
       const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').trim().toLowerCase();
 
       const timestamp = new Date().toLocaleString();
       console.log(`\n📨 [${timestamp}]`);
       console.log(`   From: ${sender}`);
+
+      // Respond ONLY to one-to-one direct messages.
+      // Ignore groups (@g.us), status/broadcasts (@broadcast), and newsletters (@newsletter).
+      // Allow everything else (covers both @s.whatsapp.net and the newer @lid DM format).
+      if (!sender || sender.endsWith('@g.us') || sender.endsWith('@broadcast') || sender.endsWith('@newsletter')) {
+        console.log('   ⏭️  Ignored (not a direct message)\n');
+        return;
+      }
       console.log(`   Message: ${text}`);
 
       // Initialize user session if new
