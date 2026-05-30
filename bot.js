@@ -91,14 +91,14 @@ MAAsterG is a Spiritual Life Master who has revolutionised the lives of lakhs of
 MAAsterG's Vaanis are lectures based on his own experience with Truth. MAAsterG says Vaanis are his PRAAN (life energy) that will take your negativity away and make you positive and happy.
 
 📺 Listen FREE on YouTube:
-• MAAsterG - https://www.youtube.com/@MAAsterG
+• MAAsterG - https://www.youtube.com/@MAAsterG_GHJ
 • MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
 
 ⬅️ Reply 0 for main menu`,
       3: `🎧 *Where to Listen?*
 
 📺 YouTube Channels:
-• MAAsterG - https://www.youtube.com/@MAAsterG
+• MAAsterG - https://www.youtube.com/@MAAsterG_GHJ
 • MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
 
 📸 Instagram:
@@ -114,7 +114,7 @@ Listen to 30 lectures of MAAsterG on YouTube!
 ✨ MAAsterG GUARANTEES: When you listen regularly, no life incident—however difficult—will make you sad!
 
 🚀 Start now:
-https://www.youtube.com/@MAAsterG/playlists
+https://www.youtube.com/@MAAsterG_GHJ/playlists
 
 ⬅️ Reply 0 for main menu`,
       5: `👋 *Meet MAAsterG*
@@ -143,7 +143,7 @@ Share your event details and we'll connect!
       7: `❓ *Questions for MAAsterG?*
 
 🔍 Search 1000+ lectures first
-📺 YouTube: https://www.youtube.com/@MAAsterG
+📺 YouTube: https://www.youtube.com/@MAAsterG_GHJ
 
 If your question is not covered:
 📧 Email: contact@maasterg.org
@@ -192,14 +192,14 @@ We'll respond promptly!
 मास्टरG की वाणियाँ उनके अपने सत्य के अनुभव पर आधारित व्याख्यान हैं। मास्टरG कहते हैं कि वाणियाँ उनकी जीवन ऊर्जा (प्राण) हैं जो आपकी नकारात्मकता को दूर करके आपको सकारात्मक और खुश बना देंगी।
 
 📺 YouTube पर मुफ्त सुनें:
-• मास्टरG - https://www.youtube.com/@MAAsterG
+• मास्टरG - https://www.youtube.com/@MAAsterG_GHJ
 • MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
 
 ⬅️ मुख्य मेनू के लिए 0 दबाएं`,
       3: `🎧 *वाणियाँ कहां सुन सकते हैं?*
 
 📺 YouTube चैनल:
-• मास्टरG - https://www.youtube.com/@MAAsterG
+• मास्टरG - https://www.youtube.com/@MAAsterG_GHJ
 • MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
 
 📸 Instagram:
@@ -215,7 +215,7 @@ YouTube पर मास्टरG की 30 वाणियाँ सुने�
 ✨ मास्टरG की गारंटी: जब आप नियमित रूप से वाणी सुनते हैं, तो कोई भी जीवन घटना आपको दुखी नहीं कर सकती!
 
 🚀 अभी शुरू करें:
-https://www.youtube.com/@MAAsterG/playlists
+https://www.youtube.com/@MAAsterG_GHJ/playlists
 
 ⬅️ मुख्य मेनू के लिए 0 दबाएं`,
       5: `👋 *मास्टरG से मिलना*
@@ -244,7 +244,7 @@ B) आध्यात्मिक साधक - व्यक्तिगत र
       7: `❓ *मास्टरG के लिए सवाल हैं?*
 
 🔍 पहले 1000+ व्याख्यानों में खोजें
-📺 YouTube: https://www.youtube.com/@MAAsterG
+📺 YouTube: https://www.youtube.com/@MAAsterG_GHJ
 
 यदि आपका सवाल कवर नहीं है:
 📧 ईमेल: contact@maasterg.org
@@ -293,14 +293,14 @@ MAAsterG ek Spiritual Life Master hain jo apni Vaanis (lectures) ke zariye lakhs
 MAAsterG ki Vaanis unke apne Truth ke experience par based lectures hain. MAAsterG kehte hain ki Vaanis unki PRAAN (life energy) hain jo aapki negativity ko remove karke aapko positive aur khush bana dengi.
 
 📺 YouTube par free suno:
-• MAAsterG - https://www.youtube.com/@MAAsterG
+• MAAsterG - https://www.youtube.com/@MAAsterG_GHJ
 • MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
 
 ⬅️ Main menu ke liye 0 dabayen`,
       3: `🎧 *Vaanis Kahan Sun Sakte Ho?*
 
 📺 YouTube Channels:
-• MAAsterG - https://www.youtube.com/@MAAsterG
+• MAAsterG - https://www.youtube.com/@MAAsterG_GHJ
 • MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
 
 📸 Instagram:
@@ -316,7 +316,7 @@ YouTube par MAAsterG ki 30 Vaanis suno!
 ✨ MAAsterG ki Guarantee: Jab aap regularly Vaani suno, toh koi bhi life incident aapko sad nahi kar sakti!
 
 🚀 Abhi shuru karo:
-https://www.youtube.com/@MAAsterG/playlists
+https://www.youtube.com/@MAAsterG_GHJ/playlists
 
 ⬅️ Main menu ke liye 0 dabayen`,
       5: `👋 *MAAsterG Se Milna*
@@ -345,7 +345,7 @@ Apne event details share karo aur hum contact karengi!
       7: `❓ *MAAsterG Ke Liye Sawal?*
 
 🔍 Pehle 1000+ lectures mein dhundo
-📺 YouTube: https://www.youtube.com/@MAAsterG
+📺 YouTube: https://www.youtube.com/@MAAsterG_GHJ
 
 Agar aapka sawaal cover nahi hua hai:
 📧 Email: contact@maasterg.org
