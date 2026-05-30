@@ -8,8 +8,67 @@ const qrcode = require('qrcode-terminal');
 const pino = require('pino');
 const fs = require('fs');
 const path = require('path');
+const express = require('express');
 
 const logger = pino();
+
+// ========== QR / CONNECTION STATE (for web QR page) ==========
+let latestQR = null;       // most recent QR string emitted by Baileys
+let isConnected = false;   // true once the bot is linked
+
+// ========== WEB SERVER: scannable QR page ==========
+// Renders the QR as a real image in the browser so it can be scanned reliably
+// (Railway/terminal log output mangles the ASCII QR and is unscannable).
+const webApp = express();
+
+webApp.get('/', (req, res) => {
+  res.send(isConnected ? '✅ MAAsterG bot is connected. <a href="/qr">QR page</a>' : '⏳ Starting… visit <a href="/qr">/qr</a> to link a device.');
+});
+
+// Lightweight JSON the QR page polls so it picks up QR rotation automatically
+webApp.get('/qr.json', (req, res) => {
+  res.json({ qr: latestQR, connected: isConnected });
+});
+
+webApp.get('/qr', (req, res) => {
+  res.type('html').send(`<!doctype html>
+<html><head><meta charset="utf-8"><title>MAAsterG — Link Device</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>body{font-family:system-ui,sans-serif;text-align:center;padding:24px;background:#fff;color:#222}
+#qr{display:inline-block;margin:16px auto;padding:16px;background:#fff;border:1px solid #eee;border-radius:12px}
+.muted{color:#888;font-size:14px}</style></head>
+<body>
+<h2>🙏 MAAsterG — Link a Device</h2>
+<p class="muted">On your phone: WhatsApp → Settings → Linked Devices → Link a Device → scan below</p>
+<div id="qr"></div>
+<p id="status" class="muted">Loading…</p>
+<script>
+let rendered = null;
+function draw(text){
+  const box = document.getElementById('qr');
+  box.innerHTML = '';
+  new QRCode(box, { text: text, width: 300, height: 300, correctLevel: QRCode.CorrectLevel.L });
+}
+async function tick(){
+  try{
+    const r = await fetch('/qr.json', {cache:'no-store'});
+    const d = await r.json();
+    const s = document.getElementById('status');
+    if (d.connected){ s.textContent = '✅ Connected! You can close this page.'; document.getElementById('qr').innerHTML='✅'; return; }
+    if (d.qr && d.qr !== rendered){ rendered = d.qr; draw(d.qr); s.textContent = 'Scan this code (it refreshes automatically).'; }
+    else if (!d.qr){ s.textContent = 'Waiting for QR… (bot may already be linked or still starting)'; }
+  }catch(e){ document.getElementById('status').textContent = 'Error fetching QR: ' + e.message; }
+}
+setInterval(tick, 2000); tick();
+</script>
+</body></html>`);
+});
+
+const WEB_PORT = process.env.PORT || 3000;
+webApp.listen(WEB_PORT, () => {
+  console.log(`🌐 QR web page available at http://localhost:${WEB_PORT}/qr (and your Railway public URL + /qr)`);
+});
 
 // ========== MENU DATA STRUCTURE ==========
 const menuData = {
@@ -345,12 +404,14 @@ async function connectToWhatsApp() {
     const { connection, lastDisconnect, qr } = update;
 
     if (qr) {
+      latestQR = qr;
+      isConnected = false;
       console.log('\n\n╔════════════════════════════════════════╗');
       console.log('║   📱 SCAN QR CODE WITH WHATSAPP 📱    ║');
       console.log('╚════════════════════════════════════════╝\n');
       qrcode.generate(qr, { small: true });
-      console.log('\n⏳ QR Code expires in 5 minutes\n');
-      console.log('✋ Do NOT close this terminal while scanning!\n');
+      console.log('\n🌐 Or open the scannable web QR:  <your-railway-url>/qr');
+      console.log('⏳ QR Code refreshes automatically until scanned\n');
     }
 
     if (connection === 'close') {
@@ -366,6 +427,8 @@ async function connectToWhatsApp() {
     }
 
     if (connection === 'open') {
+      isConnected = true;
+      latestQR = null;
       console.log('\n╔════════════════════════════════════════╗');
       console.log('║    ✅ BOT CONNECTED & READY! ✅       ║');
       console.log('╚════════════════════════════════════════╝\n');
