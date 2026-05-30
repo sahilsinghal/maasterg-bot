@@ -1,4 +1,9 @@
-const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, MessageType } = require('@whiskeysockets/baileys');
+// Polyfill Web Crypto API global for Node < 20 (Baileys requires globalThis.crypto)
+if (typeof globalThis.crypto === 'undefined') {
+  globalThis.crypto = require('crypto').webcrypto;
+}
+
+const { default: makeWASocket, useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion, Browsers } = require('@whiskeysockets/baileys');
 const qrcode = require('qrcode-terminal');
 const pino = require('pino');
 const fs = require('fs');
@@ -322,9 +327,14 @@ let sock;
 async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState('auth_info');
 
+  const { version, isLatest } = await fetchLatestBaileysVersion();
+  console.log(`📦 Using WhatsApp Web version ${version.join('.')} (latest: ${isLatest})`);
+
   sock = makeWASocket({
+    version,
     auth: state,
     printQRInTerminal: false,
+    browser: Browsers.macOS('Desktop'),
     logger: pino({ level: 'silent' }),
     syncFullHistory: false
   });
@@ -344,7 +354,9 @@ async function connectToWhatsApp() {
     }
 
     if (connection === 'close') {
-      const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+      const statusCode = lastDisconnect?.error?.output?.statusCode;
+      console.log('🔎 Disconnect reason:', statusCode, '| message:', lastDisconnect?.error?.message);
+      const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
       if (shouldReconnect) {
         console.log('🔄 Connection lost. Reconnecting...');
         setTimeout(() => connectToWhatsApp(), 3000);
