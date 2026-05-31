@@ -377,13 +377,104 @@ Hum turant jawab dengi!
   }
 };
 
+// ========== INPUT INTERPRETATION HELPERS ==========
+// Lowercase, strip WhatsApp markdown/extra spaces for easier matching
+function normalizeText(s) {
+  return (s || '').toLowerCase().replace(/[*_~`]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+// Detect language from a digit OR natural words (incl. Devanagari). Returns 1/2/3 or null.
+function detectLanguage(text) {
+  const t = normalizeText(text);
+  if (t === '3' || /\b(hinglish|hing)\b/.test(t)) return 3;
+  if (t === '2' || /\bhindi\b/.test(t) || t.includes('हिंदी') || t.includes('हिन्दी')) return 2;
+  if (t === '1' || /\b(english|eng|angrezi|angreji)\b/.test(t) || t.includes('अंग्रेज')) return 1;
+  return null;
+}
+
+// Universal commands that work from any screen. Returns 'menu' | 'help' | 'language' | null.
+function detectCommand(text) {
+  const t = normalizeText(text);
+  if (['language', 'change language', 'bhasha', 'भाषा'].includes(t)) return 'language';
+  if (['help', 'madad', 'sahayta', 'sahayata', 'info'].includes(t)) return 'help';
+  const menuWords = ['menu', 'main menu', 'start', 'restart', 'hi', 'hii', 'hey', 'hello', 'helo',
+    'namaste', 'namaskar', '🙏', '0', 'back', 'wapas', 'peeche'];
+  if (menuWords.includes(t)) return 'menu';
+  return null;
+}
+
+// Map free text to a main-menu option (1-9). Returns the number or null.
+const menuKeywords = {
+  1: ['about', 'know about', 'maasterg', 'master g', 'masterg', 'guru', 'who is'],
+  2: ['vaani', 'vaanis', 'vani', 'vanis', 'lecture', 'lectures', 'pravachan'],
+  3: ['listen', 'where to listen', 'suno', 'sunna', 'youtube', 'channel', 'podcast'],
+  4: ['challenge', '30 day', '30-day', '30day', '30 din', 'tees din'],
+  5: ['meet', 'milna', 'milne', 'meeting', 'darshan'],
+  6: ['organise', 'organize', 'arrange', 'host', 'program', 'programme', 'aayojan'],
+  7: ['question', 'questions', 'sawaal', 'sawal', 'prashn', 'doubt'],
+  8: ['satsang', 'attend', 'join', 'community', 'samuday', 'group', 'seva'],
+  9: ['other', 'others', 'anya', 'koi aur', 'general', 'something else']
+};
+function detectMenuOption(text) {
+  const t = normalizeText(text);
+  if (/^[1-9]$/.test(t)) return parseInt(t, 10);
+  for (const num of Object.keys(menuKeywords)) {
+    if (menuKeywords[num].some(k => t.includes(k))) return parseInt(num, 10);
+  }
+  return null;
+}
+
+// Sent once on first contact (bilingual, before a language is chosen)
+const welcomeMessage = `🙏 *Welcome to MAAsterG Communication Team* 🙏
+🙏 *मास्टरG कम्युनिकेशन टीम में आपका स्वागत है* 🙏
+
+I can guide you to MAAsterG's Vaanis, the 30-Day Challenge, events and more.
+मैं आपको MAAsterG की वाणियाँ, 30-दिन की चुनौती, इवेंट्स आदि की जानकारी दूँगा।
+
+💡 You can type *menu* anytime, or *help* if you get stuck.`;
+
+const helpMessage = `ℹ️ *How to use this bot* / *इसका उपयोग कैसे करें*
+
+• Type *menu* — main menu / मुख्य मेनू
+• Reply with a *number* (1-9) to choose an option
+• You can also type words like *Vaani*, *Meet*, *Event*, *Listen*
+• Type *language* — change language / भाषा बदलें
+
+🙏 Type *menu* to begin.`;
+
 // User session storage (in-memory)
 const userSessions = {};
 
 let sock;
+let isConnecting = false; // prevents overlapping reconnect attempts (avoids stacked listeners)
+
+// Dedupe recently handled message IDs so a single message is never answered twice
+const processedMessages = new Set();
+function alreadyHandled(id) {
+  if (!id) return false;
+  if (processedMessages.has(id)) return true;
+  processedMessages.add(id);
+  if (processedMessages.size > 1000) processedMessages.clear(); // keep memory bounded
+  return false;
+}
 
 // ========== MAIN BOT FUNCTION ==========
 async function connectToWhatsApp() {
+  if (isConnecting) {
+    console.log('⏳ Connection attempt already in progress — skipping duplicate.');
+    return;
+  }
+  isConnecting = true;
+
+  // Tear down any previous socket so its listeners don't stack (prevents duplicate replies)
+  if (sock) {
+    try {
+      sock.ev.removeAllListeners();
+      sock.end();
+    } catch (e) { /* ignore */ }
+    sock = null;
+  }
+
   const { state, saveCreds } = await useMultiFileAuthState('auth_info');
 
   const { version, isLatest } = await fetchLatestBaileysVersion();
@@ -415,6 +506,7 @@ async function connectToWhatsApp() {
     }
 
     if (connection === 'close') {
+      isConnecting = false;
       const statusCode = lastDisconnect?.error?.output?.statusCode;
       console.log('🔎 Disconnect reason:', statusCode, '| message:', lastDisconnect?.error?.message);
       const shouldReconnect = statusCode !== DisconnectReason.loggedOut;
@@ -428,6 +520,7 @@ async function connectToWhatsApp() {
 
     if (connection === 'open') {
       isConnected = true;
+      isConnecting = false;
       latestQR = null;
       console.log('\n╔════════════════════════════════════════╗');
       console.log('║    ✅ BOT CONNECTED & READY! ✅       ║');
@@ -439,9 +532,18 @@ async function connectToWhatsApp() {
 
   sock.ev.on('messages.upsert', async (m) => {
     try {
+      // Only react to live messages, not history/sync batches
+      if (m.type !== 'notify') return;
+
       const msg = m.messages[0];
-      if (!msg.message) return;
+      if (!msg || !msg.message) return;
       if (msg.key.fromMe) return;
+
+      // Skip if we've already processed this exact message (prevents double replies)
+      if (alreadyHandled(msg.key.id)) {
+        console.log('   🔁 Duplicate message skipped:', msg.key.id);
+        return;
+      }
 
       const sender = msg.key.remoteJid;
       const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').trim().toLowerCase();
@@ -460,17 +562,53 @@ async function connectToWhatsApp() {
       console.log(`   Message: ${text}`);
 
       // Initialize user session if new
+      let firstContact = false;
       if (!userSessions[sender]) {
         userSessions[sender] = { stage: 'language', language: null };
+        firstContact = true;
         console.log(`   🆕 New user initialized\n`);
       }
 
       const session = userSessions[sender];
+      const uiLang = session.language || 1; // English text until a language is picked
+
+      // First-ever contact: send a warm welcome before anything else
+      if (firstContact) {
+        await sock.sendMessage(sender, { text: welcomeMessage });
+        console.log('   👋 Sent welcome message');
+      }
+
+      // ===== UNIVERSAL KEYWORDS (work from any screen) =====
+      const command = detectCommand(text);
+      if (command === 'help') {
+        await sock.sendMessage(sender, { text: helpMessage });
+        console.log('   ℹ️  Sent help\n');
+        return;
+      }
+      if (command === 'language') {
+        session.stage = 'language';
+        await sock.sendMessage(sender, { text: menuData[uiLang].languageMenu });
+        console.log('   🌐 Sent language menu (keyword)\n');
+        return;
+      }
+      if (command === 'menu') {
+        if (session.language) {
+          session.stage = 'mainMenu';
+          await sock.sendMessage(sender, { text: menuData[session.language].mainMenu });
+          console.log('   ➡️  Sent main menu (keyword)\n');
+        } else {
+          session.stage = 'language';
+          await sock.sendMessage(sender, { text: menuData[uiLang].languageMenu });
+          console.log('   ➡️  Sent language menu (keyword)\n');
+        }
+        return;
+      }
 
       // ===== STAGE 1: LANGUAGE SELECTION =====
       if (session.stage === 'language') {
-        if (['1', '2', '3'].includes(text)) {
-          session.language = parseInt(text);
+        const detected = detectLanguage(text);
+        if (detected) {
+          session.language = detected;
           session.stage = 'mainMenu';
           
           const selectedLang = menuData[session.language].language;
@@ -481,27 +619,20 @@ async function connectToWhatsApp() {
           console.log(`   ➡️  Sent main menu\n`);
           return;
         } else {
-          const langMenu = menuData[1].languageMenu;
-          await sock.sendMessage(sender, { text: langMenu });
-          console.log(`   ✅ Sent language selection menu\n`);
+          // Graceful fallback — don't silently loop the same menu
+          await sock.sendMessage(sender, {
+            text: `🙏 Please reply *1*, *2* or *3* — or just type *English*, *Hindi*, or *Hinglish*.\n\n${menuData[1].languageMenu}`
+          });
+          console.log(`   ↩️  Language not understood, sent guidance\n`);
           return;
         }
       }
 
       // ===== STAGE 2: MAIN MENU =====
       if (session.stage === 'mainMenu') {
-        // Back to language selection
-        if (text === '0') {
-          session.stage = 'language';
-          const langMenu = menuData[session.language].languageMenu;
-          await sock.sendMessage(sender, { text: langMenu });
-          console.log(`   ➡️  Returned to language selection\n`);
-          return;
-        }
-
-        // Main menu options
-        const responseNum = parseInt(text);
-        if (responseNum >= 1 && responseNum <= 9) {
+        // Main menu options — accept numbers OR keywords (e.g. "vaani", "meet", "listen")
+        const responseNum = detectMenuOption(text);
+        if (responseNum) {
           const response = menuData[session.language]?.responses?.[responseNum];
           
           if (response) {
@@ -511,10 +642,11 @@ async function connectToWhatsApp() {
           }
         }
 
-        // Invalid input
-        const invalidMsg = menuData[session.language].invalidInput;
-        await sock.sendMessage(sender, { text: invalidMsg });
-        console.log(`   ❌ Invalid option, sent error message\n`);
+        // Graceful fallback — re-show the menu with hints instead of a bare error
+        await sock.sendMessage(sender, {
+          text: `${menuData[session.language].invalidInput}\n\n${menuData[session.language].mainMenu}\n\n💡 Tip: type *menu* anytime, *help* for assistance, or *language* to switch language.`
+        });
+        console.log(`   ❌ Not understood, sent fallback + menu\n`);
         return;
       }
 
@@ -526,11 +658,9 @@ async function connectToWhatsApp() {
 
 // ========== ERROR HANDLING ==========
 process.on('uncaughtException', (err) => {
+  // Log only. Reconnection is handled by the connection.update 'close' handler,
+  // so we must NOT spawn another socket here (that would stack listeners → duplicate replies).
   console.error('💥 Uncaught Exception:', err.message);
-  setTimeout(() => {
-    console.log('🔄 Attempting to reconnect...');
-    connectToWhatsApp();
-  }, 5000);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
