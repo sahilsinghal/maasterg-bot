@@ -5,7 +5,7 @@
 A complete, production-ready WhatsApp bot repository with:
 - ✅ Fully functional Baileys bot code
 - ✅ 7+ comprehensive documentation files
-- ✅ Ready to deploy on Railway (free)
+- ✅ Ready to deploy on Oracle Cloud (Always Free, no hour limit)
 - ✅ Multi-language support (English, Hindi, Hinglish)
 - ✅ MIT Open Source License
 - ✅ Contributing guidelines
@@ -26,7 +26,7 @@ maasterg-bot/
 ├── 📖 README.md                 ← Main documentation (start here!)
 ├── 📖 QUICKSTART.md             ← 10-minute quick start
 ├── 📖 SETUP.md                  ← Detailed local setup guide
-├── 📖 DEPLOYMENT.md             ← Railway deployment guide
+├── 📖 DEPLOYMENT.md             ← Oracle Cloud deployment guide
 ├── 📖 TROUBLESHOOTING.md        ← Common issues & solutions
 ├── 📖 GITHUB_SETUP.md           ← GitHub push guide
 │
@@ -47,7 +47,7 @@ maasterg-bot/
 
 **Ready to deploy?**
 1. 👉 Push to GitHub: **[GITHUB_SETUP.md](GITHUB_SETUP.md)**
-2. Deploy: **[DEPLOYMENT.md](DEPLOYMENT.md)** - Railway setup
+2. Deploy: **[DEPLOYMENT.md](DEPLOYMENT.md)** - Oracle Cloud setup
 
 **Having issues?**
 1. 👉 Check: **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)**
@@ -63,7 +63,7 @@ maasterg-bot/
 | package.json | 1 KB | ~40 | Dependencies |
 | README.md | 8.6 KB | ~300 | Documentation |
 | SETUP.md | 9 KB | ~350 | Setup guide |
-| DEPLOYMENT.md | 11 KB | ~400 | Railway deploy |
+| DEPLOYMENT.md | 11 KB | ~400 | Oracle Cloud deploy |
 | QUICKSTART.md | 2.8 KB | ~100 | Quick start |
 | TROUBLESHOOTING.md | 11 KB | ~400 | Troubleshooting |
 | GITHUB_SETUP.md | 8 KB | ~300 | GitHub guide |
@@ -107,13 +107,15 @@ npm start
 # Push to GitHub
 git push origin main
 
-# Deploy to Railway
-railway login
-railway init
-railway up
+# Deploy to Oracle Cloud (on your Always Free VM)
+ssh -i /path/to/key ubuntu@<your-public-ip>
+sudo npm install -g pm2
+git clone https://github.com/yourusername/maasterg-bot.git
+cd maasterg-bot && npm install
+pm2 start bot.js --name maasterg-bot
 
 # View logs
-railway logs --follow
+pm2 logs maasterg-bot
 ```
 
 ---
@@ -139,7 +141,7 @@ railway logs --follow
 - Best for beginners
 
 ### DEPLOYMENT.md (11 KB)
-- Railway deployment steps
+- Oracle Cloud deployment steps
 - Post-deployment monitoring
 - Advanced configuration
 - Scaling & performance
@@ -200,8 +202,8 @@ railway logs --follow
 |-----------|------|-------|
 | Bot code | FREE | Open source MIT |
 | WhatsApp (Baileys) | FREE | No API costs |
-| Hosting (Railway) | FREE | 600 hrs/month |
-| Domain | FREE | Use Railway domain |
+| Hosting (Oracle Cloud) | FREE | Always Free — no hour limit |
+| Public IP | FREE | Use the VM's public IP |
 | Monitoring | FREE | Built-in logs |
 | **Total Monthly** | **$0** | Completely free! |
 
@@ -231,14 +233,14 @@ git push origin main                        # Push to GitHub
 
 ## 🌐 Deployment Platforms
 
-### Recommended: Railway ⭐
-- **Cost:** FREE (600 hrs/month)
-- **Setup:** 3 commands
-- **Uptime:** 99%
-- **Scaling:** Automatic
+### Recommended: Oracle Cloud (Always Free) ⭐
+- **Cost:** FREE — no monthly hour limit (runs 24/7)
+- **Setup:** SSH in, install pm2, `pm2 start bot.js`
+- **Uptime:** VM stays up as long as you keep it running
+- **Persistence:** `auth_info/` survives restarts on the VM disk
 
 ### Alternatives
-- **Render:** FREE tier, similar to Railway
+- **Render:** FREE tier, but has usage/sleep limits
 - **Vercel:** Good for serverless, complex for bot
 - **AWS:** Free tier available, more setup
 - **GCP:** Free tier available, more setup
@@ -280,7 +282,7 @@ Restart bot: `npm start`
 
 ### Daily
 ```bash
-railway logs          # Check for errors
+pm2 logs maasterg-bot  # Check for errors
 ```
 
 ### Weekly
@@ -354,7 +356,7 @@ Before going live:
 - [ ] Code pushed to GitHub
 - [ ] `.env` file created and configured
 - [ ] `auth_info/` in `.gitignore`
-- [ ] Deployed to Railway successfully
+- [ ] Deployed to Oracle Cloud successfully
 - [ ] Verified in logs: "BOT CONNECTED & READY"
 - [ ] Tested first message response
 
@@ -368,7 +370,7 @@ Before going live:
 4. **Test locally** → `npm start`
 5. **Push to GitHub** → Follow [GITHUB_SETUP.md](GITHUB_SETUP.md)
 6. **Deploy** → Follow [DEPLOYMENT.md](DEPLOYMENT.md)
-7. **Monitor** → Check Railway logs
+7. **Monitor** → Check pm2 logs (`pm2 logs maasterg-bot`)
 8. **Maintain** → Regular updates
 
 ---
@@ -390,7 +392,7 @@ MIT License - See [LICENSE](LICENSE) file
 
 - Built with ❤️ for MAAsterG Community
 - Powered by [Baileys](https://github.com/WhiskeySockets/Baileys)
-- Hosted on [Railway](https://railway.app)
+- Hosted on [Oracle Cloud](https://www.oracle.com/cloud/free/)
 - Licensed under [MIT](LICENSE)
 
 ---
@@ -400,7 +402,7 @@ MIT License - See [LICENSE](LICENSE) file
 - 📖 [Full Documentation](README.md)
 - 🐛 [GitHub Issues](https://github.com/yourusername/maasterg-bot/issues)
 - 💬 [Baileys Community](https://github.com/WhiskeySockets/Baileys)
-- 🚀 [Railway Support](https://railway.app/support)
+- 🚀 [Oracle Cloud Docs](https://docs.oracle.com/en-us/iaas/Content/home.htm)
 - 📧 Email: contact@maasterg.org
 
 ---
@@ -416,7 +418,7 @@ git clone https://github.com/yourusername/maasterg-bot.git
 
 **2. Follow [QUICKSTART.md](QUICKSTART.md) (10 minutes)**
 
-**3. Deploy to Railway for free**
+**3. Deploy to Oracle Cloud for free**
 
 **Questions?** See [README.md](README.md)
 

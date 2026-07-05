@@ -61,22 +61,31 @@ Send any message to your bot number. You should get language selection menu.
 
 ---
 
-## 6️⃣ Deploy to Railway (Optional)
+## 6️⃣ Deploy to Oracle Cloud (Optional)
+
+Deploy on an Oracle Cloud "Always Free" Ubuntu VM (no monthly hour limit). Full walkthrough in [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ```bash
-# Install Railway CLI
-npm install -g @railway/cli
+# SSH into your Always Free VM
+ssh -i /path/to/key ubuntu@<your-public-ip>
 
-# Login
-railway login
+# On the VM: install pm2, clone the repo, install deps
+sudo npm install -g pm2
+git clone https://github.com/yourusername/maasterg-bot.git
+cd maasterg-bot && npm install
 
-# Deploy
-railway init
-railway up
+# Start the bot with pm2
+pm2 start bot.js --name maasterg-bot
+
+# Keep it running across reboots
+pm2 startup
+pm2 save
 
 # View logs
-railway logs --follow
+pm2 logs maasterg-bot
 ```
+
+Then open `http://<your-public-ip>:3000/qr` in a browser to scan the QR code.
 
 Done! 🎉
 
@@ -126,9 +135,9 @@ npm start              # Run bot locally
 npm install            # Install dependencies
 npm update             # Update dependencies
 rm -rf auth_info/      # Reset WhatsApp session
-railway logs           # View logs on Railway
+pm2 logs maasterg-bot  # View logs on Oracle Cloud VM
 git push origin main   # Push code to GitHub
-railway up             # Deploy to Railway
+pm2 restart maasterg-bot  # Restart bot after an update
 ```
 
 ---

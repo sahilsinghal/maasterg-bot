@@ -16,7 +16,7 @@ MAAsterG Bot is a **completely free, open-source WhatsApp chatbot** designed for
 **Features:**
 - ✅ **Zero Cost** - Completely free to deploy and run
 - ✅ **Multi-Language** - English, Hindi, Hinglish support
-- ✅ **24/7 Availability** - Runs on free Railway cloud hosting
+- ✅ **24/7 Availability** - Runs on a free Oracle Cloud Always Free VM
 - ✅ **Easy Setup** - Get running in 15 minutes
 - ✅ **No Dependencies** - No WhatsApp API costs or monthly fees
 - ✅ **Full Control** - Self-hosted, completely transparent
@@ -29,7 +29,7 @@ MAAsterG Bot is a **completely free, open-source WhatsApp chatbot** designed for
 |-----------|-----------|------|
 | Runtime | Node.js 18 LTS | Free |
 | WhatsApp Library | Baileys (Open Source) | Free |
-| Cloud Hosting | Railway | Free (600 hrs/month) |
+| Cloud Hosting | Oracle Cloud (Always Free VM) | Free (no hour limit) |
 | Version Control | Git/GitHub | Free |
 | Database | Optional (Firebase/Local) | Free tier available |
 
@@ -66,7 +66,7 @@ npm start
 
 ---
 
-## ☁️ Deploy to Railway (Free Cloud)
+## ☁️ Deploy to Oracle Cloud (Free 24/7 VM)
 
 ### Step 1: Push to GitHub
 
@@ -83,26 +83,33 @@ git remote add origin https://github.com/yourusername/maasterg-bot.git
 git push -u origin main
 ```
 
-### Step 2: Deploy on Railway
+### Step 2: Deploy on your Oracle Cloud VM
 
 ```bash
-# Install Railway CLI
-npm install -g @railway/cli
+# SSH into your Always Free Ubuntu VM
+ssh -i /path/to/key ubuntu@<your-public-ip>
 
-# Login to Railway
-railway login
+# Install Node.js 18 + pm2 (one-time)
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt-get install -y nodejs git
+sudo npm install -g pm2
 
-# Initialize project
-railway init
-
-# Deploy
-railway up
+# Clone and run
+git clone https://github.com/yourusername/maasterg-bot.git
+cd maasterg-bot
+npm install
+pm2 start bot.js --name maasterg-bot
+pm2 startup && pm2 save   # survive reboots
 
 # View logs
-railway logs
+pm2 logs maasterg-bot
 ```
 
-**Your bot is now live on Railway!** 🌐
+Then open `http://<your-public-ip>:3000/qr` to scan the QR.
+
+**Your bot is now live on Oracle Cloud, 24/7!** 🌐
+
+> See **[DEPLOYMENT.md](./DEPLOYMENT.md)** for the full step-by-step guide (VM creation, opening port 3000, etc.).
 
 ---
 
@@ -205,7 +212,7 @@ await admin.firestore().collection('messages').add({
 ## 📖 Documentation
 
 - **[SETUP.md](./SETUP.md)** - Detailed local setup guide
-- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Railway deployment guide
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Oracle Cloud deployment guide
 - **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** - Common issues & solutions
 - **[API.md](./API.md)** - Baileys API reference
 
@@ -239,7 +246,7 @@ This folder contains your WhatsApp session credentials. Always:
 
 ```bash
 # View live logs
-railway logs
+pm2 logs maasterg-bot
 
 # Check if bot is connected
 # Look for: "✅ BOT CONNECTED & READY!"
@@ -272,9 +279,9 @@ rm -rf auth_info/  # Delete session and rescan QR
 - Verify WhatsApp number includes country code (+91...)
 - Check WhatsApp rate limits
 
-### Railway deployment fails?
+### Oracle Cloud deployment issues?
 ```bash
-railway logs  # Check detailed error logs
+pm2 logs maasterg-bot  # Check detailed error logs
 ```
 
 See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for more issues.
@@ -291,11 +298,11 @@ See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) for more issues.
 | Uptime | 99%+ |
 | Cost | $0/month |
 
-**Railway Free Tier Includes:**
-- 600 hours/month compute
-- Auto-scaling
-- 99% uptime SLA
-- Free PostgreSQL (if needed)
+**Oracle Cloud Always Free Includes:**
+- A VM that runs 24/7 with no monthly hour limit
+- Persistent disk (your `auth_info/` session survives restarts)
+- Full root access to install anything
+- pm2 auto-restart on crash and reboot
 
 ---
 
@@ -320,9 +327,9 @@ Contributions are welcome! To contribute:
 - [ ] Scanned QR code with WhatsApp
 - [ ] Created GitHub repository
 - [ ] Pushed code to GitHub
-- [ ] Created Railway account
-- [ ] Deployed on Railway
-- [ ] Verified bot is online (`railway logs`)
+- [ ] Created Oracle Cloud Always Free VM
+- [ ] Deployed on the VM with pm2
+- [ ] Verified bot is online (`pm2 logs maasterg-bot`)
 
 ---
 
@@ -331,7 +338,7 @@ Contributions are welcome! To contribute:
 **Community Help:**
 - 🐛 [GitHub Issues](https://github.com/yourusername/maasterg-bot/issues)
 - 💬 [Baileys GitHub](https://github.com/WhiskeySockets/Baileys)
-- 🚀 [Railway Support](https://railway.app/support)
+- 🚀 [Oracle Cloud Docs](https://docs.oracle.com/en-us/iaas/Content/home.htm)
 
 **Official Links:**
 - 🌐 Website: [www.maasterg.org](https://www.maasterg.org)
@@ -356,7 +363,7 @@ This project is licensed under the **MIT License** - see [LICENSE](./LICENSE) fi
 
 - Built with ❤️ for MAAsterG Community
 - Powered by [Baileys](https://github.com/WhiskeySockets/Baileys)
-- Hosted on [Railway](https://railway.app)
+- Hosted on [Oracle Cloud](https://www.oracle.com/cloud/free/)
 - For NGOs serving spiritual communities
 
 ---
@@ -390,7 +397,7 @@ This project is licensed under the **MIT License** - see [LICENSE](./LICENSE) fi
 ### v1.0.0 (2024)
 - ✨ Initial release
 - 🌐 Multi-language support (English, Hindi, Hinglish)
-- ✅ Baileys + Railway integration
+- ✅ Baileys + Oracle Cloud deployment
 - 📱 WhatsApp menu system
 - 🔐 Security best practices
 - 📖 Comprehensive documentation

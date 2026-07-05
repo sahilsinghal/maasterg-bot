@@ -332,7 +332,7 @@ await sock.sendMessage(sender, { text: part2 })
 
 ---
 
-## Railway Deployment Issues
+## Oracle Cloud Deployment Issues
 
 ### ❌ "Deployment failed"
 
@@ -341,8 +341,8 @@ await sock.sendMessage(sender, { text: part2 })
 **Solutions:**
 
 ```bash
-# View error logs
-railway logs
+# View error logs on the VM
+pm2 logs maasterg-bot
 
 # Common causes:
 # 1. Syntax error in bot.js
@@ -352,48 +352,49 @@ railway logs
 # Fix locally first
 npm start
 
-# Then deploy
-git push origin main
-railway up
+# Then deploy the update on the VM
+cd ~/maasterg-bot && git pull origin main && npm install && pm2 restart maasterg-bot
 ```
 
-### ❌ "Railway bot not connecting after deployment"
+### ❌ "Bot not connecting after deployment"
 
-**Cause:** Fresh session needed on Railway
+**Cause:** Fresh WhatsApp session needed on the VM
 
 **Solutions:**
 
 ```bash
 # View logs
-railway logs
+pm2 logs maasterg-bot
 
-# Look for "SCAN QR CODE" message
-# Scan the QR code from logs
+# Open the QR page in a browser and scan it:
+# http://<your-public-ip>:3000/qr
+# (Requires TCP port 3000 open in the OCI Security List
+#  ingress rules AND the Ubuntu iptables firewall)
 
-# If no QR code appears, restart deployment:
-railway up
+# If no QR appears, restart the bot:
+pm2 restart maasterg-bot
 
 # Monitor logs
-railway logs --follow
+pm2 logs maasterg-bot
 ```
 
-### ❌ "Railway out of free hours"
+### ❌ "Worried about running out of free hours"
 
-**Cause:** Exceeded 600 hours/month
+**Cause:** Misconception carried over from hour-capped platforms
 
 **Solutions:**
 
 ```bash
-# Option 1: Wait for month reset
+# Good news: the Oracle Cloud Always Free tier has NO monthly
+# hour cap — the VM can run 24/7 at $0/month.
 
-# Option 2: Upgrade to paid plan
-# Go to railway.app/account/billing
-
-# Option 3: Deploy to alternative
-# Use Render, Vercel, or similar
+# The only thing to check: make sure the instance uses an
+# Always-Free-eligible shape (e.g. VM.Standard.A1.Flex within
+# the free allocation, or VM.Standard.E2.1.Micro) so it is
+# never billed. Confirm in the OCI console under Compute.
 ```
 
-### ❌ "High memory usage on Railway"
+### ❌ "High memory usage on the VM"
 
 **Cause:** Memory leak or large session
 
@@ -401,13 +402,11 @@ railway logs --follow
 
 ```bash
 # Monitor memory
-railway logs | grep -i memory
+pm2 status
+pm2 logs maasterg-bot | grep -i memory
 
-# Restart deployment (clears memory)
-# In Railway dashboard: Restart Deployment
-
-# Or via CLI:
-railway redeploy
+# Restart the bot (clears memory)
+pm2 restart maasterg-bot
 
 # Optimize code to reduce memory footprint
 ```
@@ -570,7 +569,7 @@ tcpdump -i any port 443 | grep whatsapp
 
 ```bash
 # Check bot daily
-railway logs
+pm2 logs maasterg-bot
 
 # Set up alerts (optional)
 # Log sensitive errors to file
@@ -601,9 +600,10 @@ npm update
 # Test locally before deploying
 npm start
 
-# Push updates
+# Push updates, then deploy on the VM
 git push origin main
-railway up
+# On the VM:
+cd ~/maasterg-bot && git pull origin main && npm install && pm2 restart maasterg-bot
 ```
 
 ### 4. Monitor WhatsApp Warnings
@@ -648,7 +648,7 @@ Before declaring problem fixed:
 - [ ] No errors in logs
 - [ ] Bot stable for 5+ minutes
 - [ ] Code pushed to GitHub
-- [ ] Railway showing "connected"
+- [ ] pm2 status showing "online" and logs show "connected"
 
 ---
 
@@ -661,7 +661,7 @@ A: Usually network-related. Check internet, restart bot, or rescan QR code.
 A: Usually 24 hours. Avoid bulk messages in future.
 
 **Q: Can I run multiple bots?**
-A: Yes, create separate Railway projects for each.
+A: Yes, run each as a separate pm2 process (e.g. `pm2 start bot.js --name maasterg-bot-2`), ideally in its own folder with a different port.
 
 **Q: How do I move bot to another server?**
 A: Clone code from GitHub, deploy to new host.

@@ -198,7 +198,7 @@ feat: Add support for Spanish language
 
 fix: Resolve QR code not displaying on Windows
 
-docs: Add setup guide for Railway deployment
+docs: Add setup guide for Oracle Cloud deployment
 
 refactor: Simplify message handling logic
 

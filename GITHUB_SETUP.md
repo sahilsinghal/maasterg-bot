@@ -288,7 +288,7 @@ Create `.github/ISSUE_TEMPLATE/bug_report.md` for bug reports.
 - ✅ Easy to share with team
 - ✅ Open source collaboration
 - ✅ Track changes in Git history
-- ✅ Deploy from GitHub (to Railway)
+- ✅ Deploy from GitHub (to your Oracle Cloud VM via `git pull`)
 
 ---
 
@@ -305,11 +305,13 @@ You can change visibility anytime in repository settings.
 ## Next Steps After Pushing
 
 1. **Share repository URL:** Send to team/community
-2. **Deploy to Railway:**
+2. **Deploy to Oracle Cloud** (see [DEPLOYMENT.md](./DEPLOYMENT.md) for full steps):
    ```bash
-   railway login
-   railway init
-   railway up
+   # SSH into your Always Free VM, then:
+   sudo npm install -g pm2
+   git clone https://github.com/YOUR_USERNAME/maasterg-bot.git
+   cd maasterg-bot && npm install
+   pm2 start bot.js --name maasterg-bot
    ```
 3. **Add collaborators:** Invite team members to contribute
 4. **Create issues:** Plan features/fixes using GitHub Issues
@@ -317,18 +319,21 @@ You can change visibility anytime in repository settings.
 
 ---
 
-## Deployment Directly from GitHub
+## Deploying Updates from GitHub
 
-Railway can deploy directly from GitHub:
+Your Oracle Cloud VM pulls the latest code straight from GitHub:
 
-1. Go to Railway dashboard
-2. Click "New Project"
-3. Select "Deploy from GitHub"
-4. Authorize Railway access to GitHub
-5. Select your `maasterg-bot` repository
-6. Confirm deployment
+1. Push your changes: `git push origin main`
+2. SSH into the VM: `ssh -i /path/to/key ubuntu@<your-public-ip>`
+3. Pull and restart:
+   ```bash
+   cd ~/maasterg-bot
+   git pull origin main
+   npm install
+   pm2 restart maasterg-bot
+   ```
 
-Railway will automatically deploy whenever you push to main branch!
+That's it — every push you pull onto the VM goes live after a `pm2 restart`. You can even wrap these commands in a small shell script or a cron job for one-command deploys.
 
 ---
 

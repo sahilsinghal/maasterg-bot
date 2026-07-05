@@ -240,7 +240,7 @@ maasterg-bot/
 ├── .gitignore             # Git ignore rules
 ├── README.md              # Main documentation
 ├── SETUP.md               # This file
-├── DEPLOYMENT.md          # Railway deployment guide
+├── DEPLOYMENT.md          # Oracle Cloud deployment guide
 ├── LICENSE                # MIT License
 └── auth_info/             # WhatsApp session (auto-created, don't commit!)
     ├── creds.json
@@ -268,7 +268,7 @@ After successful local setup:
 
 1. **Customize responses** - Edit menu text in `bot.js`
 2. **Add more languages** - Duplicate language section in `menuData`
-3. **Deploy to Railway** - Follow [DEPLOYMENT.md](./DEPLOYMENT.md)
+3. **Deploy to Oracle Cloud** - Follow [DEPLOYMENT.md](./DEPLOYMENT.md)
 4. **Connect database** - Optional, for data persistence
 5. **Set up monitoring** - Track bot performance
 
@@ -401,7 +401,7 @@ rm -rf auth_info/
 ## FAQ
 
 **Q: Can I run the bot 24/7 locally?**
-A: Yes, but it's better to deploy to Railway for reliability. Keeping your computer on 24/7 wastes electricity.
+A: Yes, but it's better to deploy to an Oracle Cloud Always Free VM for reliability. Keeping your computer on 24/7 wastes electricity.
 
 **Q: Do I need a separate WhatsApp number?**
 A: No, you can use your personal number. But for production, use a dedicated business number.
@@ -431,7 +431,7 @@ If you're stuck:
 
 ## Next: Deployment
 
-Once your bot is working locally, deploy it to Railway!
+Once your bot is working locally, deploy it to Oracle Cloud!
 
 👉 **See [DEPLOYMENT.md](./DEPLOYMENT.md) for free cloud deployment**
 

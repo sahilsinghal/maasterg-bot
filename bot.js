@@ -18,7 +18,7 @@ let isConnected = false;   // true once the bot is linked
 
 // ========== WEB SERVER: scannable QR page ==========
 // Renders the QR as a real image in the browser so it can be scanned reliably
-// (Railway/terminal log output mangles the ASCII QR and is unscannable).
+// (terminal/server log output mangles the ASCII QR and is unscannable).
 const webApp = express();
 
 webApp.get('/', (req, res) => {
@@ -67,7 +67,7 @@ setInterval(tick, 2000); tick();
 
 const WEB_PORT = process.env.PORT || 3000;
 webApp.listen(WEB_PORT, () => {
-  console.log(`🌐 QR web page available at http://localhost:${WEB_PORT}/qr (and your Railway public URL + /qr)`);
+  console.log(`🌐 QR web page available at http://localhost:${WEB_PORT}/qr (and your server's public IP/URL + /qr)`);
 });
 
 // ========== MENU DATA STRUCTURE ==========
@@ -501,7 +501,7 @@ async function connectToWhatsApp() {
       console.log('║   📱 SCAN QR CODE WITH WHATSAPP 📱    ║');
       console.log('╚════════════════════════════════════════╝\n');
       qrcode.generate(qr, { small: true });
-      console.log('\n🌐 Or open the scannable web QR:  <your-railway-url>/qr');
+      console.log('\n🌐 Or open the scannable web QR:  http://<your-server-ip>:' + WEB_PORT + '/qr');
       console.log('⏳ QR Code refreshes automatically until scanned\n');
     }
 
