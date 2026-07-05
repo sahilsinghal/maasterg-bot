@@ -38,6 +38,18 @@ No coding, no API keys, no Google Cloud project needed. We use a small
 // Using openById() means the script works even as a standalone project.
 var SHEET_ID = 'PASTE_YOUR_SHEET_ID_HERE';
 
+// Run this ONCE from the editor (Run > authorize) to grant the spreadsheet
+// permission. Without this, doPost fails silently with "unable to open file".
+function authorize() {
+  var name = SpreadsheetApp.openById(SHEET_ID).getSheets()[0].getName();
+  Logger.log('Authorized. First sheet: ' + name);
+}
+
+// Lets you sanity-check the deployment in a browser (GET the /exec URL).
+function doGet() {
+  return ContentService.createTextOutput('MAAsterG webhook is live ✅');
+}
+
 // Receives lead metadata from the MAAsterG bot and MERGES it into one row per
 // person (matched by jid). It never clears the sheet — it only appends a new
 // row or updates an existing one. The merge makes the sheet the durable source
