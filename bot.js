@@ -1,3 +1,6 @@
+// Load environment variables from .env (e.g. GOOGLE_SHEET_WEBHOOK_URL)
+require('dotenv').config();
+
 // Polyfill Web Crypto API global for Node < 20 (Baileys requires globalThis.crypto)
 if (typeof globalThis.crypto === 'undefined') {
   globalThis.crypto = require('crypto').webcrypto;

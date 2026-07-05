@@ -105,17 +105,19 @@ function doPost(e) {
   (looks like `https://script.google.com/macros/s/AKfy.../exec`).
 
 ### 4. Give the URL to the bot
-Open `config/menu.json` and paste the URL:
 
-```json
-"settings": {
-  ...
-  "googleSheetWebhookUrl": "https://script.google.com/macros/s/AKfy.../exec"
-}
+**Recommended — via `.env` (keeps the URL out of git):**
+
+```bash
+# in the project root, in .env  (copy from .env.example)
+GOOGLE_SHEET_WEBHOOK_URL=https://script.google.com/macros/s/AKfy.../exec
 ```
 
-Save. The bot hot-reloads config, so it takes effect within a couple of
-seconds (or restart with `pm2 restart maasterg-bot`).
+Then restart: `pm2 restart maasterg-bot`.
+
+Alternatively (less secure, ends up in git) you can set it in
+`config/menu.json` → `settings.googleSheetWebhookUrl`. The `.env` value always
+wins if both are set.
 
 That's it — as people chat, rows appear/update in your Google Sheet
 automatically. Share the Sheet (View access) with anyone who needs to see it.
