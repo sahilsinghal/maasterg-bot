@@ -1,0 +1,344 @@
+{
+  "_readme": "Edit this file to change ANY bot text, questions, answers, or menu structure. No code changes needed. Each label/answer can have en/hi/hinglish; if a language is missing the bot falls back to 'fallbackLanguage'. A node with 'children' is a menu; a node with 'answer' is a final reply; a node with 'ref' reuses another node's children.",
+
+  "settings": {
+    "contactEmail": "contact@maasterg.org",
+    "website": "https://www.maasterg.org",
+    "youtubeHindi": "https://www.youtube.com/@MAAsterG_GHJ",
+    "youtubeEnglish": "https://www.youtube.com/@MAAsterGEnglish",
+    "youtubePlaylists": "https://www.youtube.com/@MAAsterG_GHJ/playlists",
+    "instagram": "https://instagram.com/maasterg",
+    "collectProfile": true,
+    "cityOptional": true,
+    "allowFreeText": true,
+    "defaultLanguage": "en",
+    "fallbackLanguage": "en",
+    "dataDir": "data"
+  },
+
+  "languages": [
+    { "code": "en", "name": "English", "aliases": ["1", "english", "eng", "angrezi", "angreji"] },
+    { "code": "hi", "name": "हिंदी (Hindi)", "aliases": ["2", "hindi", "हिंदी", "हिन्दी"] },
+    { "code": "hinglish", "name": "Hinglish", "aliases": ["3", "hinglish", "hing"] }
+  ],
+
+  "commands": {
+    "menu": ["menu", "main menu", "start", "restart", "hi", "hii", "hey", "hello", "helo", "namaste", "namaskar", "🙏", "0"],
+    "back": ["back", "previous", "wapas", "peeche", "b"],
+    "help": ["help", "madad", "sahayta", "sahayata", "info"],
+    "language": ["language", "change language", "bhasha", "भाषा"]
+  },
+
+  "prompts": {
+    "welcome": {
+      "en": "🙏 *Welcome to MAAsterG Communication Team* 🙏\n🙏 *मास्टरG कम्युनिकेशन टीम में आपका स्वागत है* 🙏\n\nI can guide you to MAAsterG's Vaanis, spiritual guidance, events and more.\n\n💡 Type *menu* anytime, *back* to go back, or *help* if you get stuck."
+    },
+    "askLanguage": {
+      "en": "🙏 *MAAsterG Communication Team*\n\nPlease choose your preferred language:\n\n1️⃣ English\n2️⃣ हिंदी (Hindi)\n3️⃣ Hinglish\n\n_Reply with a number, or type the language name._",
+      "hi": "🙏 *मास्टरG कम्युनिकेशन टीम*\n\nकृपया अपनी पसंदीदा भाषा चुनें:\n\n1️⃣ English\n2️⃣ हिंदी\n3️⃣ Hinglish",
+      "hinglish": "🙏 *MAAsterG Communication Team*\n\nApni pasand ki language chune:\n\n1️⃣ English\n2️⃣ Hindi\n3️⃣ Hinglish"
+    },
+    "languageInvalid": {
+      "en": "🙏 Please reply *1*, *2* or *3* — or type *English*, *Hindi*, or *Hinglish*."
+    },
+    "askName": {
+      "en": "😊 Before we begin, what may I call you?\n\n_Please type your *name*._",
+      "hi": "😊 शुरू करने से पहले, मैं आपको किस नाम से बुलाऊं?\n\n_कृपया अपना *नाम* लिखें।_",
+      "hinglish": "😊 Shuru karne se pehle, main aapko kis naam se bulaun?\n\n_Kripya apna *naam* likhein._"
+    },
+    "askCity": {
+      "en": "🏙️ Thank you, {name}! Which *city* are you from? _(optional — reply *skip* to continue)_",
+      "hi": "🏙️ धन्यवाद, {name}! आप किस *शहर* से हैं? _(वैकल्पिक — जारी रखने के लिए *skip* लिखें)_",
+      "hinglish": "🏙️ Dhanyavaad, {name}! Aap kis *city* se ho? _(optional — continue karne ke liye *skip* likhein)_"
+    },
+    "citySkipWords": ["skip", "no", "nahi", "later", "-"],
+    "mainMenuTitle": {
+      "en": "🙏 *What are you seeking right now, {name}?*\n\nChoose an option:",
+      "hi": "🙏 *आप इस समय क्या खोज रहे हैं, {name}?*\n\nएक विकल्प चुनें:",
+      "hinglish": "🙏 *Aap is samay kya dhoondh rahe ho, {name}?*\n\nEk option chune:"
+    },
+    "submenuTitle": {
+      "en": "*{title}*\n\nChoose an option:",
+      "hi": "*{title}*\n\nएक विकल्प चुनें:",
+      "hinglish": "*{title}*\n\nEk option chune:"
+    },
+    "invalid": {
+      "en": "❌ Sorry, I didn't understand that. Please reply with one of the numbers below (you can also type a keyword).",
+      "hi": "❌ क्षमा करें, मैं समझ नहीं पाया। कृपया नीचे दिए नंबरों में से एक चुनें (आप कीवर्ड भी टाइप कर सकते हैं)।",
+      "hinglish": "❌ Maaf kijiye, main samajh nahi paya. Kripya neeche diye numbers me se ek chune (keyword bhi type kar sakte ho)."
+    },
+    "notAnswered": {
+      "en": "🙏 We don't have a ready answer for this yet. Please email us at *{contactEmail}* and MAAsterG's team will personally get back to you.",
+      "hi": "🙏 इसका उत्तर अभी तैयार नहीं है। कृपया हमें *{contactEmail}* पर ईमेल करें, मास्टरG की टीम आपसे संपर्क करेगी।",
+      "hinglish": "🙏 Iska answer abhi ready nahi hai. Kripya humein *{contactEmail}* par email karein, MAAsterG ki team aapse contact karegi."
+    },
+    "backOptions": {
+      "en": "\n\n⬅️ Reply *back* for the PREVIOUS menu\n🏠 Reply *menu* for the MAIN menu",
+      "hi": "\n\n⬅️ पिछले मेनू के लिए *back* लिखें\n🏠 मुख्य मेनू के लिए *menu* लिखें",
+      "hinglish": "\n\n⬅️ Pichle menu ke liye *back* likhein\n🏠 Main menu ke liye *menu* likhein"
+    },
+    "help": {
+      "en": "ℹ️ *How to use this bot*\n\n• Reply with a *number* to choose an option\n• You can also type *keywords* (e.g. Vaani, stress, events)\n• Type *back* — previous menu\n• Type *menu* — main menu\n• Type *language* — change language\n\n🙏 Type *menu* to begin."
+    }
+  },
+
+  "menu": [
+    {
+      "id": "2.1",
+      "label": {
+        "en": "💛 Clarity & Guidance in Life",
+        "hi": "💛 जीवन में स्पष्टता और मार्गदर्शन",
+        "hinglish": "💛 Life me clarity aur guidance"
+      },
+      "keywords": ["clarity", "guidance", "life", "problem", "help", "stress", "sad"],
+      "children": [
+        { "id": "2.1.1", "label": { "en": "Relationship problems / Breakup" }, "keywords": ["relationship", "breakup", "love", "partner"],
+          "answer": { "en": "💛 *Relationships & Breakups*\n\nPain in relationships comes from expectation and attachment. MAAsterG's Vaanis help you find peace within — so no person's presence or absence can disturb you.\n\n▶️ Start listening: {youtubeHindi}\n\nFor personal guidance, email {contactEmail}." } },
+        { "id": "2.1.2", "label": { "en": "Exam / Academic stress" }, "keywords": ["exam", "study", "academic", "student", "marks"],
+          "answer": { "en": "📚 *Exam & Academic Stress*\n\nStress clouds the mind. Listening to Vaanis daily calms the mind and sharpens focus, so you can give your best without fear of results.\n\n▶️ {youtubeHindi}\n\nNeed to talk? Email {contactEmail}." } },
+        { "id": "2.1.3", "label": { "en": "Work stress" }, "keywords": ["work", "job", "office", "career", "boss"],
+          "answer": { "en": "💼 *Work Stress*\n\nMAAsterG teaches how to work fully yet stay light inside — action without anxiety. Regular Vaani listening dissolves the pressure at its root.\n\n▶️ {youtubeHindi}\n\nFor personal help, email {contactEmail}." } },
+        { "id": "2.1.4", "label": { "en": "Marriage problems" }, "keywords": ["marriage", "husband", "wife", "spouse", "divorce"],
+          "answer": { "en": "💞 *Marriage Problems*\n\nMost conflict dissolves when we work on ourselves first. MAAsterG's Vaanis build acceptance and inner peace that transform relationships from within.\n\n▶️ {youtubeHindi}\n\nFor personal guidance, email {contactEmail}." } },
+        { "id": "2.1.5", "label": { "en": "Loneliness" }, "keywords": ["lonely", "loneliness", "alone", "akela"],
+          "answer": { "en": "🤍 *Loneliness*\n\nYou are never truly alone. MAAsterG's Vaanis help you discover a fullness within that no external company can give.\n\n▶️ {youtubeHindi}\n\nWe're here — email {contactEmail}." } },
+        { "id": "2.1.6", "label": { "en": "Fear" }, "keywords": ["fear", "afraid", "dar", "phobia"],
+          "answer": { "en": "🕊️ *Fear*\n\nFear loses its grip in the light of understanding. Listen to MAAsterG's Vaanis daily to grow fearless from the inside.\n\n▶️ {youtubeHindi}\n\nEmail {contactEmail} for support." } },
+        { "id": "2.1.7", "label": { "en": "Financial stress" }, "keywords": ["money", "financial", "finance", "debt", "paisa"],
+          "answer": { "en": "🪙 *Financial Stress*\n\nMAAsterG teaches right effort with inner calm. Vaanis remove the anxiety that clouds decisions and drains your energy.\n\n▶️ {youtubeHindi}\n\nEmail {contactEmail}." } },
+        { "id": "2.1.8", "label": { "en": "Depression" }, "keywords": ["depression", "depressed", "hopeless"],
+          "answer": { "en": "🌅 *Depression*\n\nPlease be gentle with yourself. Lakhs of people have found lightness and hope through MAAsterG's Vaanis. Begin with a few minutes daily.\n\n▶️ {youtubeHindi}\n\n🙏 If you need to talk to someone, email {contactEmail}. If you are in crisis, please also reach a local helpline or doctor." } },
+        { "id": "2.1.9", "label": { "en": "Overthinking" }, "keywords": ["overthinking", "thoughts", "mind", "sochna"],
+          "answer": { "en": "🧠 *Overthinking*\n\nThe mind quietens when it is fed the right understanding. Daily Vaani listening slows the endless thoughts and brings stillness.\n\n▶️ {youtubeHindi}\n\nEmail {contactEmail}." } },
+        { "id": "2.1.10", "label": { "en": "Anxiety" }, "keywords": ["anxiety", "anxious", "panic", "ghabrahat"],
+          "answer": { "en": "🌿 *Anxiety*\n\nAnxiety fades as trust in life grows. MAAsterG's Vaanis rebuild that trust, breath by breath, day by day.\n\n▶️ {youtubeHindi}\n\nEmail {contactEmail} for personal support." } }
+      ]
+    },
+
+    {
+      "id": "2.2",
+      "label": {
+        "en": "🕉️ Deepen my Spiritual Journey",
+        "hi": "🕉️ अपनी आध्यात्मिक यात्रा गहरी करें",
+        "hinglish": "🕉️ Apni spiritual journey deep karein"
+      },
+      "keywords": ["spiritual", "spirituality", "journey", "adhyatm", "meditation"],
+      "children": [
+        { "id": "2.2.1", "label": { "en": "Purpose of Life" }, "keywords": ["purpose", "meaning", "why", "jeevan"],
+          "answer": { "en": "🌟 *Purpose of Life*\n\nMAAsterG says the purpose of life is to return Home — to realise your true Self and live in lasting happiness. His Vaanis are a step-by-step guide on this path.\n\n▶️ {youtubeHindi}" } },
+        { "id": "2.2.2", "label": { "en": "Devotional (God Vaanis)" }, "keywords": ["devotional", "god", "bhakti", "bhajan"],
+          "answer": { "en": "🙏 *Devotional — God Vaanis*\n\nMAAsterG's God Vaanis fill the heart with love and surrender. Listen and let devotion arise naturally.\n\n▶️ {youtubeHindi}" } },
+        { "id": "2.2.3", "label": { "en": "Spirituality for Beginners" }, "keywords": ["beginner", "beginners", "start", "new", "shuruaat"],
+          "answer": { "en": "🌱 *Spirituality for Beginners*\n\nNew to the path? Start simple: listen to one Vaani a day with an open heart. Understanding will grow on its own.\n\n▶️ Beginner playlists: {youtubePlaylists}" } },
+        { "id": "2.2.4", "label": { "en": "Enlightenment" }, "keywords": ["enlightenment", "moksha", "self realization", "gyan"],
+          "answer": { "en": "✨ *Enlightenment*\n\nEnlightenment is not far away — it is your own nature, waiting to be realised. MAAsterG attained it in 2007 and shows the way through his Vaanis.\n\n▶️ {youtubeHindi}" } }
+      ]
+    },
+
+    {
+      "id": "2.3",
+      "label": {
+        "en": "📿 Know more about MAAsterG & His Work",
+        "hi": "📿 मास्टरG और उनके कार्य के बारे में जानें",
+        "hinglish": "📿 MAAsterG aur unke kaam ke baare me jaane"
+      },
+      "keywords": ["maasterg", "master g", "masterg", "about", "guru", "work"],
+      "children": [
+        {
+          "id": "2.3.1",
+          "label": { "en": "About MAAsterG" },
+          "keywords": ["about", "who"],
+          "children": [
+            { "id": "2.3.1.1", "label": { "en": "Who is MAAsterG?" }, "keywords": ["who"],
+              "answer": {
+                "en": "🌟 *Who is MAAsterG?*\n\nMAAsterG is a Spiritual Life Master who has transformed the lives of lakhs of people through his Vaanis (lectures). He attained enlightenment in 2007 and has been sharing his experiential wisdom for the past 18 years — completely free of cost and without donations.\n\n🌐 {website}",
+                "hi": "🌟 *मास्टरG कौन हैं?*\n\nमास्टरG एक आध्यात्मिक जीवन गुरु हैं जिन्होंने अपनी वाणियों के माध्यम से लाखों लोगों के जीवन में क्रांति ला दी है। उन्हें 2007 में ज्ञान की प्राप्ति हुई और वे पिछले 18 सालों से अपना ज्ञान पूरी तरह मुफ्त साझा कर रहे हैं।\n\n🌐 {website}",
+                "hinglish": "🌟 *MAAsterG kaun hain?*\n\nMAAsterG ek Spiritual Life Master hain jinhone apni Vaanis ke zariye lakhs logo ke jeevan me inqilaab laya hai. Unhe 2007 me enlightenment mila aur woh pichle 18 saalo se apna knowledge bilkul free share kar rahe hain.\n\n🌐 {website}"
+              } },
+            { "id": "2.3.1.2", "label": { "en": "Is MAAsterG enlightened?" }, "keywords": ["enlightened", "enlightenment"],
+              "answer": { "en": "✨ *Is MAAsterG enlightened?*\n\nYes. MAAsterG attained enlightenment in 2007. He often shares the story of his 9-day inner journey and has written about it in his book.\n\n▶️ Watch the 9-day journey: {youtubeHindi}\n📖 Books: {website}" } },
+            { "id": "2.3.1.3", "label": { "en": "What is MAAsterG's aim?" }, "keywords": ["aim", "mission", "goal"],
+              "answer": { "en": "🎯 *MAAsterG's Aim*\n\nTo make humanity happy and take people back Home — to their true Self. This is the heart of Mission 800 Crore.\n\n🌐 {website}" } },
+            { "id": "2.3.1.4", "label": { "en": "What is the proof that what MAAsterG says is the truth?" }, "keywords": ["proof", "truth", "evidence"],
+              "answer": { "en": "🔎 *Proof of Truth*\n\nMAAsterG asks you not to believe blindly — but to experience for yourself. Listen to the Vaanis daily and observe the change in your own life. That direct experience is the proof.\n\n▶️ {youtubeHindi}" } },
+            { "id": "2.3.1.5", "label": { "en": "What practices does MAAsterG prescribe?" }, "keywords": ["practice", "practices", "sadhana"],
+              "answer": { "en": "🧘 *Practices MAAsterG Prescribes*\n\nThe core practice is simple: listen to Vaanis daily with full attention. This alone brings deep transformation.\n\n▶️ {youtubeHindi}" } },
+            { "id": "2.3.1.6", "label": { "en": "Does MAAsterG conduct any courses?" }, "keywords": ["course", "courses", "class"],
+              "answer": { "en": "📗 *Courses*\n\nFor details on any courses, satsangs or events, please email {contactEmail} or visit {website}." } },
+            { "id": "2.3.1.7", "label": { "en": "Official social media accounts" }, "keywords": ["social", "media", "instagram", "youtube"],
+              "answer": { "en": "🔗 *Official Accounts*\n\n📺 YouTube (Hindi): {youtubeHindi}\n📺 YouTube (English): {youtubeEnglish}\n📸 Instagram: {instagram}\n🌐 Website: {website}\n\n⚠️ Please beware of fake accounts." } },
+            { "id": "2.3.1.8", "label": { "en": "Meaning of the word 'MAAsterG'" }, "keywords": ["meaning", "name", "word"],
+              "answer": { "en": "🕉️ *Meaning of 'MAAsterG'*\n\nFor the deeper meaning behind the name, please listen to MAAsterG explain it in his Vaanis.\n\n▶️ {youtubeHindi}" } },
+            { "id": "2.3.1.9", "label": { "en": "What is 'Art of Dying' in MAAsterG's logo?" }, "keywords": ["art of dying", "logo", "dying"],
+              "answer": { "en": "🪷 *Art of Dying*\n\n'Art of Dying' points to dissolving the ego so the true Self can live — dying to the false to be reborn in truth. MAAsterG explains this beautifully in his Vaanis.\n\n▶️ {youtubeHindi}" } }
+          ]
+        },
+        {
+          "id": "2.3.2",
+          "label": { "en": "Vaanis" },
+          "keywords": ["vaani", "vaanis", "vani", "lecture", "pravachan"],
+          "children": [
+            {
+              "id": "2.3.2.1",
+              "label": { "en": "About Vaanis" },
+              "children": [
+                { "id": "2.3.2.1.1", "label": { "en": "What are Vaanis?" }, "keywords": ["what are vaani", "what is vaani"],
+                  "answer": {
+                    "en": "🎙️ *What are Vaanis?*\n\nMAAsterG's Vaanis are lectures based on his own experience of Truth. He says the Vaanis are his PRAAN (life energy) — they take your negativity away and make you positive and happy.\n\n▶️ {youtubeHindi}",
+                    "hi": "🎙️ *वाणियाँ क्या हैं?*\n\nमास्टरG की वाणियाँ उनके सत्य के अनुभव पर आधारित व्याख्यान हैं। वे कहते हैं कि वाणियाँ उनकी प्राण-ऊर्जा हैं जो आपकी नकारात्मकता दूर करके आपको खुश बनाती हैं।\n\n▶️ {youtubeHindi}",
+                    "hinglish": "🎙️ *Vaanis kya hain?*\n\nMAAsterG ki Vaanis unke Truth ke experience par based lectures hain. Woh kehte hain Vaanis unki PRAAN (life energy) hain jo aapki negativity hata kar aapko khush banati hain.\n\n▶️ {youtubeHindi}"
+                  } },
+                { "id": "2.3.2.1.2", "label": { "en": "Where can I listen to more Vaanis?" }, "keywords": ["listen", "where", "suno", "channel"],
+                  "answer": { "en": "🎧 *Where to Listen*\n\n📺 YouTube (Hindi): {youtubeHindi}\n📺 YouTube (English): {youtubeEnglish}\n📸 Instagram: {instagram}\n🌐 Website: {website}\n\nAll completely FREE." } },
+                { "id": "2.3.2.1.3", "label": { "en": "What is the 30-Day Challenge?" }, "keywords": ["30 day", "30-day", "challenge", "30 din"],
+                  "answer": { "en": "🔥 *30-Day Challenge*\n\nListen to 30 lectures of MAAsterG on YouTube. MAAsterG guarantees: when you listen regularly, no life incident — however difficult — will make you sad!\n\n🚀 Start: {youtubePlaylists}" } },
+                { "id": "2.3.2.1.4", "label": { "en": "How long to listen to see impact?" }, "keywords": ["how long", "duration", "impact"],
+                  "answer": { "en": "⏳ *How Long to See Impact*\n\nMany listeners feel a shift within days of daily listening. Give it a sincere 30 days and observe the change yourself.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.1.5", "label": { "en": "Prescribed manner and time to listen?" }, "keywords": ["manner", "time", "how to listen"],
+                  "answer": { "en": "🕰️ *How & When to Listen*\n\nListen daily with full attention — ideally in a quiet space where you can absorb the words. Consistency matters more than duration.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.1.6", "label": { "en": "Why is daily listening necessary?" }, "keywords": ["daily", "why daily", "regular"],
+                  "answer": { "en": "🔁 *Why Listen Daily*\n\nJust as the body needs food daily, the mind needs the right nourishment daily. Regular Vaanis keep negativity from returning and keep you positive.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.1.7", "label": { "en": "Is there any age limit for Vaanis?" }, "keywords": ["age", "age limit", "kids", "old"],
+                  "answer": { "en": "👶🧓 *Age Limit*\n\nNone. Vaanis are for everyone — children, youth, adults and elders alike.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.1.8", "label": { "en": "Are Vaanis connected to any specific religion?" }, "keywords": ["religion", "hindu", "muslim", "christian"],
+                  "answer": { "en": "🕊️ *Religion*\n\nVaanis are beyond any single religion. They speak of universal Truth and are for people of all faiths and backgrounds.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.1.9", "label": { "en": "How many people listen to Vaanis regularly?" }, "keywords": ["how many", "listeners", "people"],
+                  "answer": { "en": "🌍 *Community of Listeners*\n\nLakhs of people across the world listen to MAAsterG's Vaanis regularly and share their transformations.\n\n▶️ {youtubeHindi}" } }
+              ]
+            },
+            {
+              "id": "2.3.2.2",
+              "label": { "en": "Impact of Vaanis" },
+              "children": [
+                { "id": "2.3.2.2.1", "label": { "en": "What change do regular listeners see?" }, "keywords": ["change", "transformation"],
+                  "answer": { "en": "🌈 *Change in Regular Listeners*\n\nListeners report deep calm, freedom from fear and overthinking, better relationships, and a steady happiness that no situation can shake.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.2.2", "label": { "en": "After how many Vaanis can I see transformation?" }, "keywords": ["how many vaani", "when"],
+                  "answer": { "en": "✨ *When Transformation Begins*\n\nMany feel it within the first few Vaanis. A sincere 30-day practice usually brings a clear, lasting shift.\n\n▶️ {youtubePlaylists}" } },
+                { "id": "2.3.2.2.3", "label": { "en": "Will Vaanis help me get enlightened?" }, "keywords": ["enlightened", "enlightenment"],
+                  "answer": { "en": "🪷 *Vaanis & Enlightenment*\n\nVaanis prepare and purify the mind, taking you steadily toward Self-realisation. Walk the path daily and let it unfold.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.2.4", "label": { "en": "Will Vaani help me become positive?" }, "keywords": ["positive", "positivity"],
+                  "answer": { "en": "☀️ *Becoming Positive*\n\nYes — MAAsterG says Vaanis remove negativity and naturally make you positive and happy.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.2.5", "label": { "en": "Will Vaani help fulfil my desires / make me happy?" }, "keywords": ["desire", "happy", "happiness", "wish"],
+                  "answer": { "en": "😊 *Happiness*\n\nVaanis give a happiness that doesn't depend on desires being fulfilled — an inner happiness that stays with you always.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.2.6", "label": { "en": "Will Vaani change my destiny?" }, "keywords": ["destiny", "fate", "kismat"],
+                  "answer": { "en": "🌟 *Destiny*\n\nWhen your inner state changes, your responses to life change — and life itself begins to transform. Experience it for yourself.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.2.7", "label": { "en": "Will Vaani build acceptance?" }, "keywords": ["acceptance", "accept"],
+                  "answer": { "en": "🤲 *Acceptance*\n\nYes — one of the deepest gifts of the Vaanis is a natural acceptance of life as it is, which ends inner conflict.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.2.8", "label": { "en": "Will Vaani heal my chronic illness?" }, "keywords": ["illness", "heal", "health", "disease"],
+                  "answer": { "en": "🌿 *Health & Healing*\n\nMany listeners report feeling lighter and more at peace, which supports overall wellbeing. Please continue any medical treatment alongside — Vaanis work on the mind and spirit.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.2.9", "label": { "en": "Will Vaani help heal my relationships?" }, "keywords": ["relationship", "relationships", "heal"],
+                  "answer": { "en": "💞 *Healing Relationships*\n\nAs you grow in peace and acceptance, your relationships heal on their own. The change begins within you.\n\n▶️ {youtubeHindi}" } },
+                { "id": "2.3.2.2.10", "label": { "en": "What if I am unhappy even after listening?" }, "keywords": ["unhappy", "still sad", "not working"],
+                  "answer": { "en": "🙏 *If You Still Feel Unhappy*\n\nPlease keep listening daily with patience and an open heart — transformation deepens over time. If you'd like personal guidance, email {contactEmail}." } }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "2.3.3",
+          "label": { "en": "Mission 800 Crore" },
+          "keywords": ["mission", "800 crore", "800"],
+          "children": [
+            { "id": "2.3.3.1", "label": { "en": "What is Mission 800 Crore?" }, "keywords": ["what is mission"],
+              "answer": { "en": "🌍 *Mission 800 Crore*\n\nMAAsterG's vision to reach every person on Earth (~800 crore people) with the happiness and wisdom of the Vaanis — so all of humanity can live happily.\n\n🌐 {website}" } },
+            { "id": "2.3.3.2", "label": { "en": "What is Happiness Guaranteed?" }, "keywords": ["happiness guaranteed", "guarantee"],
+              "answer": { "en": "😊 *Happiness Guaranteed*\n\nMAAsterG's guarantee: listen to the Vaanis regularly and no life incident, however difficult, will be able to make you sad.\n\n▶️ {youtubeHindi}" } }
+          ]
+        },
+        {
+          "id": "2.3.4",
+          "label": { "en": "God Home Journey Foundation (GHJF)" },
+          "keywords": ["ghjf", "foundation", "god home journey"],
+          "children": [
+            { "id": "2.3.4.1", "label": { "en": "What is God Home Journey?" }, "keywords": ["what is", "god home"],
+              "answer": { "en": "🏠 *God Home Journey*\n\nThe journey of the soul back to its true Home — to God, to the Self. MAAsterG's Vaanis guide you on this journey.\n\n🌐 {website}" } },
+            { "id": "2.3.4.2", "label": { "en": "Who founded GHJF and when?" }, "keywords": ["who founded", "when"],
+              "answer": { "en": "📜 *About GHJF*\n\nGod Home Journey Foundation carries forward MAAsterG's mission. For full details, please visit {website} or email {contactEmail}." } },
+            { "id": "2.3.4.3", "label": { "en": "How does GHJF fund its activities?" }, "keywords": ["fund", "funding", "money"],
+              "answer": { "en": "🪙 *Funding*\n\nMAAsterG shares his wisdom completely free and without donations. For specifics on how the Foundation runs, please email {contactEmail}." } },
+            { "id": "2.3.4.4", "label": { "en": "I want to contribute to GHJF" }, "keywords": ["contribute", "donate", "seva", "volunteer"],
+              "answer": { "en": "🤝 *Contribute / Seva*\n\nThank you for your generous heart! Please email {contactEmail} with how you'd like to contribute, and the team will guide you." } },
+            { "id": "2.3.4.5", "label": { "en": "Does GHJF have an ashram or office?" }, "keywords": ["ashram", "office", "address", "location"],
+              "answer": { "en": "📍 *Ashram / Office*\n\nFor current location and visiting details, please email {contactEmail} or visit {website}." } },
+            { "id": "2.3.4.6", "label": { "en": "How can I become a member of GHJF?" }, "keywords": ["member", "membership", "join"],
+              "answer": { "en": "🙏 *Membership*\n\nThe best way to begin is to listen to the Vaanis daily. To connect with the community formally, email {contactEmail}." } }
+          ]
+        },
+        {
+          "id": "2.3.5",
+          "label": { "en": "MAAsterG Books" },
+          "keywords": ["book", "books", "read", "kitab"],
+          "children": [
+            { "id": "2.3.5.1", "label": { "en": "Where can I buy MAAsterG's books?" }, "keywords": ["buy", "purchase", "amazon"],
+              "answer": { "en": "📖 *MAAsterG Books*\n\nMAAsterG's books are available online. For current links and titles, please visit {website} or email {contactEmail}." } }
+          ]
+        },
+        {
+          "id": "2.3.6",
+          "label": { "en": "Media Contact" },
+          "keywords": ["media", "press", "podcast", "interview"],
+          "children": [
+            { "id": "2.3.6.1", "label": { "en": "I am a media person and want to connect" }, "keywords": ["media person", "journalist", "press"],
+              "answer": { "en": "🎤 *Media Enquiry*\n\nWonderful! Please email {contactEmail} with your outlet and request, and the team will connect with you." } },
+            { "id": "2.3.6.2", "label": { "en": "I want to host MAAsterG on my podcast" }, "keywords": ["podcast", "host", "youtube channel"],
+              "answer": { "en": "🎙️ *Podcast Invitation*\n\nThank you! Please email {contactEmail} with your podcast details and proposed dates." } },
+            { "id": "2.3.6.3", "label": { "en": "Media contact details" }, "keywords": ["contact", "email"],
+              "answer": { "en": "📧 *Media Contact*\n\nEmail: {contactEmail}\nWebsite: {website}" } }
+          ]
+        },
+        {
+          "id": "2.3.7",
+          "label": { "en": "Organise a MAAsterG Event" },
+          "keywords": ["organise", "organize", "event", "arrange", "host event"],
+          "children": [
+            { "id": "2.3.7.1", "label": { "en": "I want to organise an event at my institution" }, "keywords": ["institution", "college", "school", "organise event"],
+              "answer": { "en": "🎤 *Organise an Event*\n\nWe'd love to bring MAAsterG to your community! Please email {contactEmail} with your institution, city, expected audience and preferred dates." } },
+            { "id": "2.3.7.2", "label": { "en": "What happens at a MAAsterG event?" }, "keywords": ["what happens", "event details"],
+              "answer": { "en": "✨ *At a MAAsterG Event*\n\nExpect powerful Vaanis, deep silence, and an uplifting experience of joy and clarity shared with fellow seekers.\n\n🌐 {website}" } }
+          ]
+        },
+        {
+          "id": "2.3.8",
+          "label": { "en": "MAAsterG Satsang" },
+          "keywords": ["satsang", "gathering", "meet", "attend"],
+          "children": [
+            { "id": "2.3.8.1", "label": { "en": "I want to attend a satsang in my city" }, "keywords": ["attend", "my city", "join satsang"],
+              "answer": { "en": "🤝 *Attend a Satsang*\n\nWonderful! Please email {contactEmail} with your name and city, and the team will inform you of satsangs near you." } },
+            { "id": "2.3.8.2", "label": { "en": "I want to organise a satsang" }, "keywords": ["organise satsang", "host satsang"],
+              "answer": { "en": "🙏 *Organise a Satsang*\n\nThank you for your seva spirit! Email {contactEmail} with your city and details to get started." } },
+            { "id": "2.3.8.3", "label": { "en": "How can I meet other Vaani listeners?" }, "keywords": ["meet listeners", "community", "experience"],
+              "answer": { "en": "👥 *Meet Other Listeners*\n\nJoin a local satsang or the community. Email {contactEmail} with your city to connect with fellow listeners." } }
+          ]
+        },
+        {
+          "id": "2.3.9",
+          "label": { "en": "Help me find Vaanis" },
+          "keywords": ["find vaani", "recommend", "which vaani", "suggest"],
+          "children": [
+            { "id": "2.3.9.1", "label": { "en": "By life situation (stress, fear, relationships…)" }, "keywords": ["situation", "problem", "life"], "ref": "2.1" },
+            { "id": "2.3.9.2", "label": { "en": "Spirituality" }, "keywords": ["spirituality", "spiritual"], "ref": "2.2" },
+            { "id": "2.3.9.3", "label": { "en": "30-Vaani Beginner Set" }, "keywords": ["beginner set", "30 vaani", "starter"],
+              "answer": { "en": "🌱 *30-Vaani Beginner Set*\n\nA perfect starting point. Begin the 30-day journey with these playlists and listen to one a day.\n\n🚀 {youtubePlaylists}" } }
+          ]
+        },
+        {
+          "id": "2.3.10",
+          "label": { "en": "Others" },
+          "keywords": ["other", "others", "general", "koi aur"],
+          "children": [
+            { "id": "2.3.10.1", "label": { "en": "I speak neither Hindi nor English" }, "keywords": ["language", "other language"],
+              "answer": { "en": "🌐 *Other Languages*\n\nWe're working to reach more languages. Please email {contactEmail} and tell us your language — it helps us grow." } },
+            { "id": "2.3.10.2", "label": { "en": "Can I get Vaanis in my local language?" }, "keywords": ["local language", "translate", "regional"],
+              "answer": { "en": "🗣️ *Vaanis in Local Languages*\n\nMore languages are being added over time. Email {contactEmail} with your language request." } },
+            { "id": "2.3.10.3", "label": { "en": "My question is not covered in any option" }, "keywords": ["not covered", "other question"],
+              "answer": { "en": "🙏 *Your Question*\n\nNo problem! Please email {contactEmail} and MAAsterG's team will personally get back to you." } },
+            { "id": "2.3.10.4", "label": { "en": "I want to speak to someone in MAAsterG's team" }, "keywords": ["speak", "talk", "team", "human"],
+              "answer": { "en": "📞 *Speak to the Team*\n\nPlease email {contactEmail} with your name, city and how we can help. A team member will reach out." } },
+            { "id": "2.3.10.5", "label": { "en": "I have questions for MAAsterG" }, "keywords": ["question for maasterg", "ask maasterg"],
+              "answer": { "en": "❓ *Questions for MAAsterG*\n\n🔍 First, search the 1000+ Vaanis — your answer may already be there: {youtubeHindi}\n\nIf not covered, email {contactEmail}. A Vaani may be recorded and posted on YouTube!" } }
+          ]
+        }
+      ]
+    }
+  ]
+}

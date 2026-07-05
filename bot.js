@@ -9,23 +9,42 @@ const pino = require('pino');
 const fs = require('fs');
 const path = require('path');
 const express = require('express');
+const { Store } = require('./lib/store');
+const { Engine, loadConfig } = require('./lib/engine');
 
-const logger = pino();
+// ========== CONFIG + ENGINE ==========
+// All menu text/questions/answers live in config/menu.json — edit that file to
+// change wording, add questions, or restructure the menu (no code changes).
+const CONFIG_PATH = path.join(__dirname, 'config', 'menu.json');
+const store = new Store(loadConfig(CONFIG_PATH).settings.dataDir || 'data');
+const engine = new Engine(loadConfig(CONFIG_PATH), store);
+
+// Hot-reload menu.json on change (edits take effect without a restart)
+try {
+  fs.watchFile(CONFIG_PATH, { interval: 2000 }, () => {
+    try {
+      engine.setConfig(loadConfig(CONFIG_PATH));
+      console.log('♻️  Reloaded config/menu.json');
+    } catch (e) {
+      console.error('⚠️  menu.json reload failed (keeping previous):', e.message);
+    }
+  });
+} catch (e) { /* ignore */ }
+
+// ========== SESSIONS (in-memory conversation state) ==========
+const userSessions = {};
 
 // ========== QR / CONNECTION STATE (for web QR page) ==========
-let latestQR = null;       // most recent QR string emitted by Baileys
-let isConnected = false;   // true once the bot is linked
+let latestQR = null;
+let isConnected = false;
 
 // ========== WEB SERVER: scannable QR page ==========
-// Renders the QR as a real image in the browser so it can be scanned reliably
-// (terminal/server log output mangles the ASCII QR and is unscannable).
 const webApp = express();
 
 webApp.get('/', (req, res) => {
   res.send(isConnected ? '✅ MAAsterG bot is connected. <a href="/qr">QR page</a>' : '⏳ Starting… visit <a href="/qr">/qr</a> to link a device.');
 });
 
-// Lightweight JSON the QR page polls so it picks up QR rotation automatically
 webApp.get('/qr.json', (req, res) => {
   res.json({ qr: latestQR, connected: isConnected });
 });
@@ -70,383 +89,8 @@ webApp.listen(WEB_PORT, () => {
   console.log(`🌐 QR web page available at http://localhost:${WEB_PORT}/qr (and your server's public IP/URL + /qr)`);
 });
 
-// ========== MENU DATA STRUCTURE ==========
-const menuData = {
-  1: { // English
-    language: 'English',
-    greeting: '🙏 Welcome to MAAsterG Communication Team',
-    languageMenu: `🙏 *MAAsterG Communication Team*\n\nPlease select your preferred language:\n\n1️⃣ English\n2️⃣ Hindi\n3️⃣ Hinglish`,
-    mainMenu: `📱 How can I help you today?\n\n1️⃣ Know about MAAsterG\n2️⃣ What are Vaanis?\n3️⃣ Where can I listen to Vaanis\n4️⃣ What is the 30-Day Challenge\n5️⃣ I want to meet MAAsterG\n6️⃣ I want to organise an event\n7️⃣ I have questions for MAAsterG\n8️⃣ I want to attend an event or satsang\n9️⃣ Other query\n\n⬅️ Reply 0 to go BACK`,
-    invalidInput: '❌ Invalid option. Please select 1-9 or 0 for menu.',
-    responses: {
-      1: `🌟 *MAAsterG*
-
-MAAsterG is a Spiritual Life Master who has revolutionised the lives of lakhs of people through his Vaanis (lectures). MAAsterG attained enlightenment in 2007 and has been spreading his experiential wisdom for the past 18 years, completely free of cost and without donations.
-
-🌐 Visit: www.maasterg.org
-
-⬅️ Reply 0 for main menu`,
-      2: `🎙️ *What are Vaanis?*
-
-MAAsterG's Vaanis are lectures based on his own experience with Truth. MAAsterG says Vaanis are his PRAAN (life energy) that will take your negativity away and make you positive and happy.
-
-📺 Listen FREE on YouTube:
-• MAAsterG - https://www.youtube.com/@MAAsterG_GHJ
-• MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
-
-⬅️ Reply 0 for main menu`,
-      3: `🎧 *Where to Listen?*
-
-📺 YouTube Channels:
-• MAAsterG - https://www.youtube.com/@MAAsterG_GHJ
-• MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
-
-📸 Instagram:
-• Instagram.com/maasterg
-
-🌐 Website: www.maasterg.org
-
-⬅️ Reply 0 for main menu`,
-      4: `🔥 *30-Day Challenge*
-
-Listen to 30 lectures of MAAsterG on YouTube!
-
-✨ MAAsterG GUARANTEES: When you listen regularly, no life incident—however difficult—will make you sad!
-
-🚀 Start now:
-https://www.youtube.com/@MAAsterG_GHJ/playlists
-
-⬅️ Reply 0 for main menu`,
-      5: `👋 *Meet MAAsterG*
-
-📌 Before meeting, listen to at least 30 lectures.
-
-Then choose:
-
-A) Join mailing list for city visits & public events
-📧 Reply: Yes
-
-B) Spiritual Seekers - Request personal meeting
-📧 Email: contact@maasterg.org
-
-⬅️ Reply 0 for main menu`,
-      6: `🎤 *Organise an Event*
-
-We'd love to bring MAAsterG to your community!
-
-📧 Email: contact@maasterg.org
-Share your event details and we'll connect!
-
-🌐 Visit: www.maasterg.org
-
-⬅️ Reply 0 for main menu`,
-      7: `❓ *Questions for MAAsterG?*
-
-🔍 Search 1000+ lectures first
-📺 YouTube: https://www.youtube.com/@MAAsterG_GHJ
-
-If your question is not covered:
-📧 Email: contact@maasterg.org
-
-A Vaani will be recorded & posted on YouTube!
-
-⬅️ Reply 0 for main menu`,
-      8: `🤝 *Join Our Community*
-
-📌 Listen to 30+ lectures first
-
-Then join your local group:
-👉 Reply: Yes, I want to join
-
-Share: Your Name, City, Contact Number
-
-Our representatives will reach out!
-
-⬅️ Reply 0 for main menu`,
-      9: `💬 *Other Query*
-
-📧 Email: contact@maasterg.org
-🌐 Visit: www.maasterg.org
-
-We'll respond promptly!
-
-⬅️ Reply 0 for main menu`
-    }
-  },
-  2: { // Hindi
-    language: 'Hindi',
-    greeting: '🙏 मास्टरG कम्युनिकेशन टीम में आपका स्वागत है',
-    languageMenu: `🙏 *मास्टरG कम्युनिकेशन टीम*\n\nकृपया अपनी पसंदीदा भाषा चुनें:\n\n1️⃣ अंग्रेजी\n2️⃣ हिंदी\n3️⃣ हिंग्लिश`,
-    mainMenu: `📱 मैं आपकी कैसे मदद कर सकता हूं?\n\n1️⃣ मास्टरG के बारे में जानें\n2️⃣ वाणियाँ क्या हैं?\n3️⃣ वाणियाँ कहां सुन सकते हैं\n4️⃣ 30 दिन की चुनौती क्या है\n5️⃣ मैं मास्टरG से मिलना चाहता हूं\n6️⃣ मैं एक इवेंट आयोजित करना चाहता हूं\n7️⃣ मेरे पास मास्टरG के लिए सवाल हैं\n8️⃣ मैं एक इवेंट या सत्संग में भाग लेना चाहता हूं\n9️⃣ अन्य सवाल\n\n⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-    invalidInput: '❌ अमान्य विकल्प। कृपया 1-9 या मेनू के लिए 0 चुनें।',
-    responses: {
-      1: `🌟 *मास्टरG*
-
-मास्टरG एक आध्यात्मिक जीवन गुरु हैं जिन्होंने अपनी वाणियों (व्याख्यानों) के माध्यम से लाखों लोगों के जीवन में क्रांति ला दी है। मास्टरG को 2007 में ज्ञान की प्राप्ति हुई और वे पिछले 18 सालों से अपना आध्यात्मिक ज्ञान पूरी तरह मुफ्त और बिना दान के साझा कर रहे हैं।
-
-🌐 विजिट करें: www.maasterg.org
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-      2: `🎙️ *वाणियाँ क्या हैं?*
-
-मास्टरG की वाणियाँ उनके अपने सत्य के अनुभव पर आधारित व्याख्यान हैं। मास्टरG कहते हैं कि वाणियाँ उनकी जीवन ऊर्जा (प्राण) हैं जो आपकी नकारात्मकता को दूर करके आपको सकारात्मक और खुश बना देंगी।
-
-📺 YouTube पर मुफ्त सुनें:
-• मास्टरG - https://www.youtube.com/@MAAsterG_GHJ
-• MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-      3: `🎧 *वाणियाँ कहां सुन सकते हैं?*
-
-📺 YouTube चैनल:
-• मास्टरG - https://www.youtube.com/@MAAsterG_GHJ
-• MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
-
-📸 Instagram:
-• Instagram.com/maasterg
-
-🌐 वेबसाइट: www.maasterg.org
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-      4: `🔥 *30 दिन की चुनौती*
-
-YouTube पर मास्टरG की 30 वाणियाँ सुनें!
-
-✨ मास्टरG की गारंटी: जब आप नियमित रूप से वाणी सुनते हैं, तो कोई भी जीवन घटना आपको दुखी नहीं कर सकती!
-
-🚀 अभी शुरू करें:
-https://www.youtube.com/@MAAsterG_GHJ/playlists
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-      5: `👋 *मास्टरG से मिलना*
-
-📌 मिलने से पहले कम से कम 30 वाणियाँ सुनें।
-
-फिर चुनें:
-
-A) शहर की यात्रा और सार्वजनिक इवेंट की जानकारी के लिए मेलिंग लिस्ट में शामिल हों
-📧 जवाब दें: हाँ
-
-B) आध्यात्मिक साधक - व्यक्तिगत रूप से मिलने का अनुरोध करें
-📧 ईमेल: contact@maasterg.org
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-      6: `🎤 *एक इवेंट आयोजित करें*
-
-हम अपने समुदाय में मास्टरG को लाना चाहेंगे!
-
-📧 ईमेल: contact@maasterg.org
-अपने इवेंट विवरण साझा करें और हम आपको जोड़ेंगे!
-
-🌐 विजिट करें: www.maasterg.org
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-      7: `❓ *मास्टरG के लिए सवाल हैं?*
-
-🔍 पहले 1000+ व्याख्यानों में खोजें
-📺 YouTube: https://www.youtube.com/@MAAsterG_GHJ
-
-यदि आपका सवाल कवर नहीं है:
-📧 ईमेल: contact@maasterg.org
-
-एक वाणी रिकॉर्ड की जाएगी और YouTube पर पोस्ट की जाएगी!
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-      8: `🤝 *हमारे समुदाय में शामिल हों*
-
-📌 पहले 30+ वाणियाँ सुनें
-
-फिर अपने स्थानीय समूह में शामिल हों:
-👉 जवाब दें: हाँ, मैं शामिल होना चाहता हूं
-
-साझा करें: आपका नाम, शहर, संपर्क नंबर
-
-हमारे प्रतिनिधि आपसे संपर्क करेंगे!
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`,
-      9: `💬 *अन्य सवाल*
-
-📧 ईमेल: contact@maasterg.org
-🌐 विजिट करें: www.maasterg.org
-
-हम तुरंत जवाब देंगे!
-
-⬅️ मुख्य मेनू के लिए 0 दबाएं`
-    }
-  },
-  3: { // Hinglish
-    language: 'Hinglish',
-    greeting: '🙏 Welcome to MAAsterG Communication Team',
-    languageMenu: `🙏 *MAAsterG Communication Team*\n\nAapni pasand ki language chune:\n\n1️⃣ English\n2️⃣ Hindi\n3️⃣ Hinglish`,
-    mainMenu: `📱 Main aapki kaise madad kar sakta hoon?\n\n1️⃣ MAAsterG ke baare mein jaane\n2️⃣ Vaanis kya hain?\n3️⃣ Vaanis kahan sun sakte ho\n4️⃣ 30 din ki challenge kya hai\n5️⃣ Mein MAAsterG se milna chahta/chahti hoon\n6️⃣ Mein event organize karna chahta/chahti hoon\n7️⃣ Mere paas MAAsterG ke liye sawaal hain\n8️⃣ Mein event ya satsang mein shamil hona chahta/chahti hoon\n9️⃣ Koi aur sawaal\n\n⬅️ Main menu ke liye 0 dabayen`,
-    invalidInput: '❌ Galat option. Kripya 1-9 ya menu ke liye 0 chune.',
-    responses: {
-      1: `🌟 *MAAsterG*
-
-MAAsterG ek Spiritual Life Master hain jo apni Vaanis (lectures) ke zariye lakhs logo ke jeevan mein inqilaab laye hain. MAAsterG ko 2007 mein enlightenment mila aur woh pichle 18 saalo se apna spiritual knowledge bilkul free aur bina donation ke share kar rahe hain.
-
-🌐 Visit kare: www.maasterg.org
-
-⬅️ Main menu ke liye 0 dabayen`,
-      2: `🎙️ *Vaanis Kya Hain?*
-
-MAAsterG ki Vaanis unke apne Truth ke experience par based lectures hain. MAAsterG kehte hain ki Vaanis unki PRAAN (life energy) hain jo aapki negativity ko remove karke aapko positive aur khush bana dengi.
-
-📺 YouTube par free suno:
-• MAAsterG - https://www.youtube.com/@MAAsterG_GHJ
-• MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
-
-⬅️ Main menu ke liye 0 dabayen`,
-      3: `🎧 *Vaanis Kahan Sun Sakte Ho?*
-
-📺 YouTube Channels:
-• MAAsterG - https://www.youtube.com/@MAAsterG_GHJ
-• MAAsterG English - https://www.youtube.com/@MAAsterGEnglish
-
-📸 Instagram:
-• Instagram.com/maasterg
-
-🌐 Website: www.maasterg.org
-
-⬅️ Main menu ke liye 0 dabayen`,
-      4: `🔥 *30 Din Ki Challenge*
-
-YouTube par MAAsterG ki 30 Vaanis suno!
-
-✨ MAAsterG ki Guarantee: Jab aap regularly Vaani suno, toh koi bhi life incident aapko sad nahi kar sakti!
-
-🚀 Abhi shuru karo:
-https://www.youtube.com/@MAAsterG_GHJ/playlists
-
-⬅️ Main menu ke liye 0 dabayen`,
-      5: `👋 *MAAsterG Se Milna*
-
-📌 Milne se pehle kam se kam 30 Vaanis suno.
-
-Phir choose karo:
-
-A) Mailing list mein shamil ho kar city visit aur events ki jaankari pao
-📧 Jawab do: Haan
-
-B) Spiritual Seekers - MAAsterG se personally milne ke liye request karo
-📧 Email: contact@maasterg.org
-
-⬅️ Main menu ke liye 0 dabayen`,
-      6: `🎤 *Event Organize Karo*
-
-Hum apne community mein MAAsterG ko lana chahte hain!
-
-📧 Email: contact@maasterg.org
-Apne event details share karo aur hum contact karengi!
-
-🌐 Visit kare: www.maasterg.org
-
-⬅️ Main menu ke liye 0 dabayen`,
-      7: `❓ *MAAsterG Ke Liye Sawal?*
-
-🔍 Pehle 1000+ lectures mein dhundo
-📺 YouTube: https://www.youtube.com/@MAAsterG_GHJ
-
-Agar aapka sawaal cover nahi hua hai:
-📧 Email: contact@maasterg.org
-
-Ek Vaani record ki jayegi aur YouTube par post ki jayegi!
-
-⬅️ Main menu ke liye 0 dabayen`,
-      8: `🤝 *Hamare Community Mein Shamil Ho*
-
-📌 Pehle 30+ Vaanis suno
-
-Phir apne local group mein shamil ho:
-👉 Jawab do: Haan, main shamil hona chahta/chahti hoon
-
-Share karo: Aapka Naam, City, Contact Number
-
-Hamare representatives aapko contact karengi!
-
-⬅️ Main menu ke liye 0 dabayen`,
-      9: `💬 *Koi Aur Sawal*
-
-📧 Email: contact@maasterg.org
-🌐 Visit kare: www.maasterg.org
-
-Hum turant jawab dengi!
-
-⬅️ Main menu ke liye 0 dabayen`
-    }
-  }
-};
-
-// ========== INPUT INTERPRETATION HELPERS ==========
-// Lowercase, strip WhatsApp markdown/extra spaces for easier matching
-function normalizeText(s) {
-  return (s || '').toLowerCase().replace(/[*_~`]+/g, ' ').replace(/\s+/g, ' ').trim();
-}
-
-// Detect language from a digit OR natural words (incl. Devanagari). Returns 1/2/3 or null.
-function detectLanguage(text) {
-  const t = normalizeText(text);
-  if (t === '3' || /\b(hinglish|hing)\b/.test(t)) return 3;
-  if (t === '2' || /\bhindi\b/.test(t) || t.includes('हिंदी') || t.includes('हिन्दी')) return 2;
-  if (t === '1' || /\b(english|eng|angrezi|angreji)\b/.test(t) || t.includes('अंग्रेज')) return 1;
-  return null;
-}
-
-// Universal commands that work from any screen. Returns 'menu' | 'help' | 'language' | null.
-function detectCommand(text) {
-  const t = normalizeText(text);
-  if (['language', 'change language', 'bhasha', 'भाषा'].includes(t)) return 'language';
-  if (['help', 'madad', 'sahayta', 'sahayata', 'info'].includes(t)) return 'help';
-  const menuWords = ['menu', 'main menu', 'start', 'restart', 'hi', 'hii', 'hey', 'hello', 'helo',
-    'namaste', 'namaskar', '🙏', '0', 'back', 'wapas', 'peeche'];
-  if (menuWords.includes(t)) return 'menu';
-  return null;
-}
-
-// Map free text to a main-menu option (1-9). Returns the number or null.
-const menuKeywords = {
-  1: ['about', 'know about', 'maasterg', 'master g', 'masterg', 'guru', 'who is'],
-  2: ['vaani', 'vaanis', 'vani', 'vanis', 'lecture', 'lectures', 'pravachan'],
-  3: ['listen', 'where to listen', 'suno', 'sunna', 'youtube', 'channel', 'podcast'],
-  4: ['challenge', '30 day', '30-day', '30day', '30 din', 'tees din'],
-  5: ['meet', 'milna', 'milne', 'meeting', 'darshan'],
-  6: ['organise', 'organize', 'arrange', 'host', 'program', 'programme', 'aayojan'],
-  7: ['question', 'questions', 'sawaal', 'sawal', 'prashn', 'doubt'],
-  8: ['satsang', 'attend', 'join', 'community', 'samuday', 'group', 'seva'],
-  9: ['other', 'others', 'anya', 'koi aur', 'general', 'something else']
-};
-function detectMenuOption(text) {
-  const t = normalizeText(text);
-  if (/^[1-9]$/.test(t)) return parseInt(t, 10);
-  for (const num of Object.keys(menuKeywords)) {
-    if (menuKeywords[num].some(k => t.includes(k))) return parseInt(num, 10);
-  }
-  return null;
-}
-
-// Sent once on first contact (bilingual, before a language is chosen)
-const welcomeMessage = `🙏 *Welcome to MAAsterG Communication Team* 🙏
-🙏 *मास्टरG कम्युनिकेशन टीम में आपका स्वागत है* 🙏
-
-I can guide you to MAAsterG's Vaanis, the 30-Day Challenge, events and more.
-मैं आपको MAAsterG की वाणियाँ, 30-दिन की चुनौती, इवेंट्स आदि की जानकारी दूँगा।
-
-💡 You can type *menu* anytime, or *help* if you get stuck.`;
-
-const helpMessage = `ℹ️ *How to use this bot* / *इसका उपयोग कैसे करें*
-
-• Type *menu* — main menu / मुख्य मेनू
-• Reply with a *number* (1-9) to choose an option
-• You can also type words like *Vaani*, *Meet*, *Event*, *Listen*
-• Type *language* — change language / भाषा बदलें
-
-🙏 Type *menu* to begin.`;
-
-// User session storage (in-memory)
-const userSessions = {};
-
 let sock;
-let isConnecting = false; // prevents overlapping reconnect attempts (avoids stacked listeners)
+let isConnecting = false;
 
 // Dedupe recently handled message IDs so a single message is never answered twice
 const processedMessages = new Set();
@@ -454,7 +98,7 @@ function alreadyHandled(id) {
   if (!id) return false;
   if (processedMessages.has(id)) return true;
   processedMessages.add(id);
-  if (processedMessages.size > 1000) processedMessages.clear(); // keep memory bounded
+  if (processedMessages.size > 1000) processedMessages.clear();
   return false;
 }
 
@@ -466,7 +110,6 @@ async function connectToWhatsApp() {
   }
   isConnecting = true;
 
-  // Tear down any previous socket so its listeners don't stack (prevents duplicate replies)
   if (sock) {
     try {
       sock.ev.removeAllListeners();
@@ -476,7 +119,6 @@ async function connectToWhatsApp() {
   }
 
   const { state, saveCreds } = await useMultiFileAuthState('auth_info');
-
   const { version, isLatest } = await fetchLatestBaileysVersion();
   console.log(`📦 Using WhatsApp Web version ${version.join('.')} (latest: ${isLatest})`);
 
@@ -522,133 +164,48 @@ async function connectToWhatsApp() {
       isConnected = true;
       isConnecting = false;
       latestQR = null;
+      const s = store.stats();
       console.log('\n╔════════════════════════════════════════╗');
       console.log('║    ✅ BOT CONNECTED & READY! ✅       ║');
       console.log('╚════════════════════════════════════════╝\n');
-      console.log('🤖 MAAsterG Bot is now LIVE\n');
+      console.log('🤖 MAAsterG Bot is now LIVE');
+      console.log(`👥 Known people: ${s.totalPeople} (named: ${s.withName})\n`);
       console.log('📊 Waiting for incoming messages...\n');
     }
   });
 
   sock.ev.on('messages.upsert', async (m) => {
     try {
-      // Only react to live messages, not history/sync batches
       if (m.type !== 'notify') return;
 
       const msg = m.messages[0];
       if (!msg || !msg.message) return;
       if (msg.key.fromMe) return;
 
-      // Skip if we've already processed this exact message (prevents double replies)
       if (alreadyHandled(msg.key.id)) {
         console.log('   🔁 Duplicate message skipped:', msg.key.id);
         return;
       }
 
       const sender = msg.key.remoteJid;
-      const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').trim().toLowerCase();
-
-      const timestamp = new Date().toLocaleString();
-      console.log(`\n📨 [${timestamp}]`);
-      console.log(`   From: ${sender}`);
 
       // Respond ONLY to one-to-one direct messages.
-      // Ignore groups (@g.us), status/broadcasts (@broadcast), and newsletters (@newsletter).
-      // Allow everything else (covers both @s.whatsapp.net and the newer @lid DM format).
       if (!sender || sender.endsWith('@g.us') || sender.endsWith('@broadcast') || sender.endsWith('@newsletter')) {
-        console.log('   ⏭️  Ignored (not a direct message)\n');
         return;
       }
-      console.log(`   Message: ${text}`);
 
-      // Initialize user session if new
-      let firstContact = false;
-      if (!userSessions[sender]) {
-        userSessions[sender] = { stage: 'language', language: null };
-        firstContact = true;
-        console.log(`   🆕 New user initialized\n`);
-      }
+      const raw = (msg.message.conversation || msg.message.extendedTextMessage?.text || '').trim();
+      console.log(`\n📨 [${new Date().toLocaleString()}] From: ${sender} | "${raw}"`);
 
+      if (!userSessions[sender]) userSessions[sender] = engine.newSession();
       const session = userSessions[sender];
-      const uiLang = session.language || 1; // English text until a language is picked
 
-      // First-ever contact: send a warm welcome before anything else
-      if (firstContact) {
-        await sock.sendMessage(sender, { text: welcomeMessage });
-        console.log('   👋 Sent welcome message');
+      // Drive the pure engine, then send whatever replies it produced.
+      const { replies, log } = engine.handle(session, raw, sender);
+      for (const reply of replies) {
+        if (reply) await sock.sendMessage(sender, { text: reply });
       }
-
-      // ===== UNIVERSAL KEYWORDS (work from any screen) =====
-      const command = detectCommand(text);
-      if (command === 'help') {
-        await sock.sendMessage(sender, { text: helpMessage });
-        console.log('   ℹ️  Sent help\n');
-        return;
-      }
-      if (command === 'language') {
-        session.stage = 'language';
-        await sock.sendMessage(sender, { text: menuData[uiLang].languageMenu });
-        console.log('   🌐 Sent language menu (keyword)\n');
-        return;
-      }
-      if (command === 'menu') {
-        if (session.language) {
-          session.stage = 'mainMenu';
-          await sock.sendMessage(sender, { text: menuData[session.language].mainMenu });
-          console.log('   ➡️  Sent main menu (keyword)\n');
-        } else {
-          session.stage = 'language';
-          await sock.sendMessage(sender, { text: menuData[uiLang].languageMenu });
-          console.log('   ➡️  Sent language menu (keyword)\n');
-        }
-        return;
-      }
-
-      // ===== STAGE 1: LANGUAGE SELECTION =====
-      if (session.stage === 'language') {
-        const detected = detectLanguage(text);
-        if (detected) {
-          session.language = detected;
-          session.stage = 'mainMenu';
-          
-          const selectedLang = menuData[session.language].language;
-          const mainMenuText = menuData[session.language].mainMenu;
-          
-          await sock.sendMessage(sender, { text: mainMenuText });
-          console.log(`   ✅ Language selected: ${selectedLang}`);
-          console.log(`   ➡️  Sent main menu\n`);
-          return;
-        } else {
-          // Graceful fallback — don't silently loop the same menu
-          await sock.sendMessage(sender, {
-            text: `🙏 Please reply *1*, *2* or *3* — or just type *English*, *Hindi*, or *Hinglish*.\n\n${menuData[1].languageMenu}`
-          });
-          console.log(`   ↩️  Language not understood, sent guidance\n`);
-          return;
-        }
-      }
-
-      // ===== STAGE 2: MAIN MENU =====
-      if (session.stage === 'mainMenu') {
-        // Main menu options — accept numbers OR keywords (e.g. "vaani", "meet", "listen")
-        const responseNum = detectMenuOption(text);
-        if (responseNum) {
-          const response = menuData[session.language]?.responses?.[responseNum];
-          
-          if (response) {
-            await sock.sendMessage(sender, { text: response });
-            console.log(`   ✅ Sent response for option ${responseNum}\n`);
-            return;
-          }
-        }
-
-        // Graceful fallback — re-show the menu with hints instead of a bare error
-        await sock.sendMessage(sender, {
-          text: `${menuData[session.language].invalidInput}\n\n${menuData[session.language].mainMenu}\n\n💡 Tip: type *menu* anytime, *help* for assistance, or *language* to switch language.`
-        });
-        console.log(`   ❌ Not understood, sent fallback + menu\n`);
-        return;
-      }
+      console.log(`   → ${log}`);
 
     } catch (error) {
       console.error('❌ Error processing message:', error.message);
@@ -658,12 +215,9 @@ async function connectToWhatsApp() {
 
 // ========== ERROR HANDLING ==========
 process.on('uncaughtException', (err) => {
-  // Log only. Reconnection is handled by the connection.update 'close' handler,
-  // so we must NOT spawn another socket here (that would stack listeners → duplicate replies).
   console.error('💥 Uncaught Exception:', err.message);
 });
-
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
   console.error('⚠️  Unhandled Rejection:', reason);
 });
 
@@ -678,7 +232,6 @@ connectToWhatsApp().catch(err => {
   process.exit(1);
 });
 
-// Graceful shutdown
 process.on('SIGINT', () => {
   console.log('\n\n📴 Bot shutting down gracefully...');
   process.exit(0);
