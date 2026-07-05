@@ -33,6 +33,11 @@ No coding, no API keys, no Google Cloud project needed. We use a small
 - Delete whatever code is there and paste this:
 
 ```javascript
+// PASTE YOUR SHEET ID HERE — from the Sheet's URL:
+//   https://docs.google.com/spreadsheets/d/<THIS_IS_THE_ID>/edit
+// Using openById() means the script works even as a standalone project.
+var SHEET_ID = 'PASTE_YOUR_SHEET_ID_HERE';
+
 // Receives lead metadata from the MAAsterG bot and MERGES it into one row per
 // person (matched by jid). It never clears the sheet — it only appends a new
 // row or updates an existing one. The merge makes the sheet the durable source
@@ -44,7 +49,7 @@ function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(30000);
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+    var sheet = SpreadsheetApp.openById(SHEET_ID).getSheets()[0];
     var data = JSON.parse(e.postData.contents);
     var headers = ['name','city','language','interests','lastTopic','messageCount','firstSeen','lastSeen','jid'];
     if (sheet.getLastRow() === 0) sheet.appendRow(headers);
