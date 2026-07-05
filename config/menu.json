@@ -13,7 +13,8 @@
     "allowFreeText": true,
     "defaultLanguage": "en",
     "fallbackLanguage": "en",
-    "dataDir": "data"
+    "dataDir": "data",
+    "googleSheetWebhookUrl": ""
   },
 
   "languages": [

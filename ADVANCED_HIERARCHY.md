@@ -13,7 +13,7 @@ This branch (`advanced_hierarchy`) upgrades the bot from a flat menu to a
 | Navigation | "Reply 0 to go back" (one level) | `back` (previous menu) + `menu` (main), at any depth |
 | Input | Numbers + keywords | Numbers **and** free-text keywords (both still work) |
 | Profile | none | Asks **Name** + **City** (optional) |
-| Data | in-memory only (lost on restart) | Persisted to disk: `data/leads.json` + `data/interactions.jsonl` |
+| Data | in-memory only (lost on restart) | Metadata persisted to disk + optional **live Google Sheet** |
 
 ## Files
 
@@ -48,31 +48,25 @@ Toggle behaviour in `settings`:
 - `allowFreeText` — accept keywords as well as numbers
 - `contactEmail`, `website`, `youtube*`, `instagram` — the links used everywhere
 
-## Data capture (zero cost)
+## Data capture (metadata only, zero cost)
 
-Everyone who chats is recorded to disk on the VM — no database, no cost:
+Only lightweight **metadata** is captured — no message transcripts:
+`name, city, language, interests (L2 categories explored), lastTopic,
+messageCount, firstSeen, lastSeen`.
 
-- **`data/leads.json`** — one record per person: `name, city, language,
-  firstSeen, lastSeen, messageCount`.
-- **`data/interactions.jsonl`** — append-only log, one line per message.
+It goes to two places:
 
-`data/` is git-ignored so PII never reaches GitHub.
+- **Local file** `data/leads.json` (always on; git-ignored so PII never reaches GitHub).
+- **Live Google Sheet** (optional, recommended for non-technical users) — set
+  `settings.googleSheetWebhookUrl` in `menu.json`. Rows appear/update in real
+  time. **Full setup: see [DATA_CAPTURE.md](./DATA_CAPTURE.md).**
 
-### Export the data
+### Export the local file
 
 ```bash
-# On the VM: produce a spreadsheet-friendly CSV
-npm run export-leads          # writes data/leads.csv
-
-# Or copy the raw files to your machine
-scp -i /path/to/key ubuntu@<vm-ip>:~/maasterg-bot/data/leads.json ./
+npm run export-leads          # writes data/leads.csv on the VM
+scp -i /path/to/key ubuntu@<vm-ip>:~/maasterg-bot/data/leads.csv ./
 ```
-
-Open `data/leads.csv` in Excel / Google Sheets.
-
-> Want it in Google Sheets automatically instead of a file? That's a future
-> upgrade (Google Sheets API is free) — the current file-based approach is the
-> simplest truly zero-cost option and works offline on the VM.
 
 ## Test
 

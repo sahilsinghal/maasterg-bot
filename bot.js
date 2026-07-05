@@ -16,7 +16,7 @@ const { Engine, loadConfig } = require('./lib/engine');
 // All menu text/questions/answers live in config/menu.json — edit that file to
 // change wording, add questions, or restructure the menu (no code changes).
 const CONFIG_PATH = path.join(__dirname, 'config', 'menu.json');
-const store = new Store(loadConfig(CONFIG_PATH).settings.dataDir || 'data');
+const store = new Store(loadConfig(CONFIG_PATH).settings);
 const engine = new Engine(loadConfig(CONFIG_PATH), store);
 
 // Hot-reload menu.json on change (edits take effect without a restart)
