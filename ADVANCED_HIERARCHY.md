@@ -43,7 +43,7 @@ numbering updates itself. **`menu.json` hot-reloads** while the bot is running,
 so edits take effect within ~2 seconds (no restart).
 
 > **Non-technical editing:** the business team can edit all questions/answers in
-> a Word document instead of JSON — see **[CONTENT_EDITING.md](./CONTENT_EDITING.md)**
+> an Excel spreadsheet instead of JSON — see **[CONTENT_EDITING.md](./CONTENT_EDITING.md)**
 > (`npm run content:export` / `content:import`).
 
 Toggle behaviour in `settings`:

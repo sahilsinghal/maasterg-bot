@@ -8,8 +8,8 @@
     "dev": "node bot.js",
     "test": "node test/engine.test.js",
     "export-leads": "node lib/store.js export-csv data",
-    "content:export": "node lib/menu-doc.js export",
-    "content:import": "node lib/menu-doc.js import"
+    "content:export": "node lib/menu-sheet.js export",
+    "content:import": "node lib/menu-sheet.js import"
   },
   "keywords": [
     "whatsapp",
