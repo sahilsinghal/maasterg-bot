@@ -42,6 +42,10 @@ Add a question by dropping a new node into the relevant `children` array — the
 numbering updates itself. **`menu.json` hot-reloads** while the bot is running,
 so edits take effect within ~2 seconds (no restart).
 
+> **Non-technical editing:** the business team can edit all questions/answers in
+> a Word document instead of JSON — see **[CONTENT_EDITING.md](./CONTENT_EDITING.md)**
+> (`npm run content:export` / `content:import`).
+
 Toggle behaviour in `settings`:
 - `collectProfile` — ask for name/city (true/false)
 - `cityOptional` — allow skipping city

@@ -7,7 +7,9 @@
     "start": "node bot.js",
     "dev": "node bot.js",
     "test": "node test/engine.test.js",
-    "export-leads": "node lib/store.js export-csv data"
+    "export-leads": "node lib/store.js export-csv data",
+    "content:export": "node lib/menu-doc.js export",
+    "content:import": "node lib/menu-doc.js import"
   },
   "keywords": [
     "whatsapp",
