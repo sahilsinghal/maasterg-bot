@@ -7,6 +7,13 @@ yarn.lock
 auth_info/
 *.sessions
 
+# Collected user data (PII — never commit!)
+data/
+*.jsonl
+
+# Config backups created by content:import
+config/*.bak
+
 # Environment Variables
 .env
 .env.local
